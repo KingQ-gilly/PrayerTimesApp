@@ -14,126 +14,194 @@
   <link rel="manifest" href="manifest.json"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;font-family:"Poppins",-apple-system,sans-serif;background:#0a0f1e;color:#fff;-webkit-tap-highlight-color:transparent;overflow:hidden;}
-    .app{height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+    html,body{
+      height:100%;
+      font-family:"Poppins",-apple-system,sans-serif;
+      background:#0a0f1e;
+      color:#fff;
+      -webkit-tap-highlight-color:transparent;
+      overflow:hidden;
+    }
+    .app{
+      height:100dvh;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
 
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
     @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.45;transform:scale(0.75);}}
-    @keyframes cardIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:translateX(0);}}
-    @keyframes glow{0%,100%{box-shadow:0 0 24px rgba(196,164,97,0.08);}50%{box-shadow:0 0 40px rgba(196,164,97,0.18);}}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.72);}}
+    @keyframes cardIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes glow{0%,100%{box-shadow:0 0 0 1px rgba(196,164,97,0.3),0 4px 24px rgba(196,164,97,0.08);}
+                   50%{box-shadow:0 0 0 1px rgba(196,164,97,0.5),0 4px 32px rgba(196,164,97,0.18);}}
     @keyframes progressGrow{from{width:0%;}}
-    @keyframes scaleIn{from{opacity:0;transform:scale(0.88);}to{opacity:1;transform:scale(1);}}
-    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-    @keyframes quoteIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
+    @keyframes quoteIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-    /* ── Tabs ── */
+    /* ── Tab bar ── */
     .tabs{
       display:flex;
-      background:#0a0f1e;
-      border-top:1px solid rgba(255,255,255,0.08);
-      padding:8px 0 max(env(safe-area-inset-bottom),12px);
+      background:rgba(10,15,30,0.95);
+      border-top:1px solid rgba(255,255,255,0.06);
+      padding:10px 0 max(env(safe-area-inset-bottom),16px);
       flex-shrink:0;
-      z-index:10;
     }
-    .tab{
-      flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-      padding:6px 0;cursor:pointer;transition:all 0.2s;
-    }
-    .tab-icon{font-size:20px;line-height:1;transition:transform 0.2s;}
-    .tab-label{font-size:10px;font-weight:600;letter-spacing:0.06em;color:rgba(255,255,255,0.3);transition:color 0.2s;}
+    .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;cursor:pointer;transition:all 0.18s;}
+    .tab-icon{font-size:22px;line-height:1;transition:transform 0.18s;}
+    .tab-label{font-size:10px;font-weight:600;letter-spacing:0.05em;color:rgba(255,255,255,0.28);transition:color 0.18s;}
     .tab.active .tab-label{color:#c4a461;}
-    .tab.active .tab-icon{transform:scale(1.1);}
-    .tab:active .tab-icon{transform:scale(0.9);}
+    .tab.active .tab-icon{transform:scale(1.12);}
+    .tab:active .tab-icon{transform:scale(0.88);}
 
     /* ── Pages ── */
-    .pages{flex:1;overflow:hidden;position:relative;}
-    .page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transition:opacity 0.25s ease;display:flex;flex-direction:column;}
+    .pages{flex:1;overflow:hidden;position:relative;min-height:0;}
+    .page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transition:opacity 0.22s ease;display:flex;flex-direction:column;}
     .page.active{opacity:1;pointer-events:all;}
     .page::-webkit-scrollbar{display:none;}
 
     /* ── Hero ── */
     .hero{
       flex-shrink:0;
-      padding:max(env(safe-area-inset-top),48px) 28px 24px;
-      background:linear-gradient(160deg,#0f1e3d 0%,#0a0f1e 100%);
+      padding:max(env(safe-area-inset-top),52px) 24px 20px;
+      background:linear-gradient(170deg,#0d1e42 0%,#0a0f1e 100%);
       position:relative;overflow:hidden;text-align:center;
-      animation:fadeIn 0.6s ease both;
     }
-    .hero::before{content:"";position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:340px;height:340px;background:radial-gradient(circle,rgba(196,164,97,0.13) 0%,transparent 70%);pointer-events:none;}
-    .notif-btn{position:absolute;top:max(env(safe-area-inset-top),16px);right:18px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;transition:all 0.2s ease;animation:fadeIn 0.5s 0.5s ease both;}
-    .notif-btn:active{transform:scale(0.9);}
+    .hero::before{
+      content:"";position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+      width:300px;height:300px;
+      background:radial-gradient(circle,rgba(196,164,97,0.12) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .notif-btn{
+      position:absolute;top:max(env(safe-area-inset-top),16px);right:16px;
+      width:38px;height:38px;border-radius:50%;
+      background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
+      display:flex;align-items:center;justify-content:center;font-size:18px;
+      cursor:pointer;transition:all 0.18s;
+    }
+    .notif-btn:active{transform:scale(0.88);}
     .notif-btn.enabled{background:rgba(196,164,97,0.15);border-color:rgba(196,164,97,0.3);}
-    .notif-toast{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);background:rgba(30,40,60,0.95);border:1px solid rgba(196,164,97,0.25);border-radius:100px;padding:8px 18px;font-size:12px;color:#c4a461;white-space:nowrap;transition:bottom 0.4s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;}
-    .notif-toast.show{bottom:12px;}
-    .hero-location{font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.4);animation:fadeUp 0.5s 0.1s ease both;}
-    .hero-date{font-size:15px;font-weight:600;color:rgba(255,255,255,0.85);margin-top:3px;animation:fadeUp 0.5s 0.15s ease both;}
-    .hero-hijri{font-size:12px;color:rgba(255,255,255,0.32);margin-top:2px;margin-bottom:18px;animation:fadeUp 0.5s 0.2s ease both;}
-    .hero-label{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#c4a461;opacity:0.85;animation:fadeUp 0.5s 0.25s ease both;}
-    .hero-prayer-name{font-size:48px;font-weight:700;color:#fff;letter-spacing:0.06em;line-height:1;font-family:"Bebas Neue",sans-serif;margin-top:6px;animation:fadeUp 0.6s 0.3s cubic-bezier(0.22,1,0.36,1) both;}
-    .hero-prayer-time{font-size:72px;font-weight:700;color:#fff;letter-spacing:0.04em;line-height:1;font-variant-numeric:tabular-nums;font-family:"Bebas Neue",sans-serif;margin-top:4px;margin-bottom:16px;animation:fadeUp 0.6s 0.35s cubic-bezier(0.22,1,0.36,1) both;}
-    .progress-track{width:100%;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;animation:fadeIn 0.4s 0.7s ease both;}
-    .progress-fill{height:100%;background:linear-gradient(90deg,#c4a461,#e8cc8a);border-radius:2px;animation:progressGrow 1.2s 0.8s cubic-bezier(0.22,1,0.36,1) both;transition:width 1s linear;}
-    .progress-labels{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.28);margin-top:5px;margin-bottom:12px;animation:fadeIn 0.4s 0.9s ease both;}
-    .countdown-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(196,164,97,0.1);border:1px solid rgba(196,164,97,0.22);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:700;color:#c4a461;letter-spacing:0.02em;animation:scaleIn 0.5s 1s cubic-bezier(0.34,1.56,0.64,1) both;}
-    .cd-dot{width:6px;height:6px;border-radius:50%;background:#c4a461;animation:pulse 1.4s ease-in-out infinite;}
+    .notif-toast{
+      position:absolute;bottom:-44px;left:50%;transform:translateX(-50%);
+      background:rgba(20,30,50,0.97);border:1px solid rgba(196,164,97,0.2);
+      border-radius:100px;padding:9px 20px;font-size:12px;color:#c4a461;
+      white-space:nowrap;transition:bottom 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;
+    }
+    .notif-toast.show{bottom:14px;}
+    .hero-location{font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);animation:fadeIn 0.4s ease both;}
+    .hero-date{font-size:16px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:2px;animation:fadeUp 0.4s 0.05s ease both;}
+    .hero-hijri{font-size:12px;color:rgba(255,255,255,0.28);margin-top:1px;margin-bottom:14px;animation:fadeUp 0.4s 0.08s ease both;}
+    .hero-label{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#c4a461;opacity:0.9;animation:fadeUp 0.4s 0.1s ease both;}
+    .hero-prayer-name{font-size:52px;font-weight:700;color:#fff;letter-spacing:0.05em;line-height:1;font-family:"Bebas Neue",sans-serif;margin-top:4px;animation:fadeUp 0.5s 0.12s cubic-bezier(0.22,1,0.36,1) both;}
+    .hero-prayer-time{font-size:64px;font-weight:700;color:#fff;letter-spacing:0.03em;line-height:1;font-variant-numeric:tabular-nums;font-family:"Bebas Neue",sans-serif;margin-top:2px;margin-bottom:14px;animation:fadeUp 0.5s 0.15s cubic-bezier(0.22,1,0.36,1) both;}
+    .progress-track{width:100%;height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,#c4a461,#e8cc8a);border-radius:2px;animation:progressGrow 1s 0.5s cubic-bezier(0.22,1,0.36,1) both;transition:width 1s linear;}
+    .progress-labels{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.25);margin-top:5px;margin-bottom:12px;}
+    .countdown-pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(196,164,97,0.1);border:1px solid rgba(196,164,97,0.2);
+      border-radius:100px;padding:9px 22px;font-size:13px;font-weight:700;color:#c4a461;
+      letter-spacing:0.02em;animation:scaleIn 0.4s 0.6s ease both;
+    }
+    .cd-dot{width:6px;height:6px;border-radius:50%;background:#c4a461;flex-shrink:0;animation:pulse 1.4s ease-in-out infinite;}
 
     /* ── Prayer list ── */
-    .list-wrap{flex:1;padding:0 16px 16px;}
-    .section-title{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:14px 4px 10px;}
-    .prayer-row{display:flex;align-items:center;padding:14px 16px;border-radius:16px;margin-bottom:8px;transition:opacity 0.4s ease,transform 0.3s ease,background 0.4s ease;}
-    .prayer-row.passed{opacity:0.3;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);}
-    .prayer-row.upcoming{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);}
-    .prayer-row.active{background:linear-gradient(135deg,rgba(196,164,97,0.18),rgba(196,164,97,0.07));border:1px solid rgba(196,164,97,0.28);animation:glow 2.5s ease-in-out infinite;}
-    .prayer-row.animate-in{animation:cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;}
-    .prayer-row.upcoming:hover,.prayer-row.active:hover{transform:translateY(-2px) scale(1.012);cursor:pointer;}
-    .prayer-row.upcoming:hover{background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.16);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
-    .prayer-row.active:hover{background:linear-gradient(135deg,rgba(196,164,97,0.28),rgba(196,164,97,0.14));border-color:rgba(196,164,97,0.45);}
-    .prayer-row.upcoming:hover .prayer-icon,.prayer-row.active:hover .prayer-icon{transform:scale(1.1) rotate(-4deg);}
-    .prayer-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:14px;flex-shrink:0;transition:transform 0.3s ease;}
-    .prayer-row.passed .prayer-icon{background:rgba(255,255,255,0.05);}
+    .list-wrap{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:12px 16px max(env(safe-area-inset-bottom),16px);
+      gap:10px;
+      min-height:0;
+    }
+    .prayer-row{
+      flex:1;
+      display:flex;align-items:center;
+      padding:0 18px;
+      border-radius:20px;
+      min-height:64px;
+      transition:transform 0.2s ease,background 0.3s ease;
+    }
+    .prayer-row.passed{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);opacity:0.38;}
+    .prayer-row.upcoming{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);}
+    .prayer-row.active{
+      background:linear-gradient(135deg,rgba(196,164,97,0.18),rgba(196,164,97,0.06));
+      border:1px solid rgba(196,164,97,0.35);
+      animation:glow 2.5s ease-in-out infinite;
+    }
+    .prayer-row.animate-in{animation:cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both;}
+    .prayer-row.upcoming:active{transform:scale(0.98);}
+    .prayer-row.active:active{transform:scale(0.98);}
+    .prayer-icon{
+      width:46px;height:46px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:22px;margin-right:16px;flex-shrink:0;
+    }
+    .prayer-row.passed .prayer-icon{background:rgba(255,255,255,0.04);}
     .prayer-row.upcoming .prayer-icon{background:rgba(255,255,255,0.07);}
     .prayer-row.active .prayer-icon{background:rgba(196,164,97,0.18);}
-    .prayer-info{flex:1;}
-    .prayer-name{font-size:16px;font-weight:700;color:rgba(255,255,255,0.95);line-height:1.2;}
+    .prayer-info{flex:1;min-width:0;}
+    .prayer-name{font-size:17px;font-weight:700;color:rgba(255,255,255,0.95);line-height:1.2;}
     .prayer-row.active .prayer-name{color:#fff;}
-    .prayer-arabic{font-size:12px;color:rgba(255,255,255,0.25);margin-top:2px;}
-    .prayer-row.active .prayer-arabic{color:rgba(196,164,97,0.55);}
-    .prayer-right-col{text-align:right;}
-    .prayer-time{font-size:18px;font-weight:600;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
-    .prayer-row.active .prayer-time{color:#fff;font-weight:700;}
-    .active-badge{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0a0f1e;background:#c4a461;border-radius:6px;padding:2px 8px;}
+    .prayer-arabic{font-size:12px;color:rgba(255,255,255,0.22);margin-top:2px;}
+    .prayer-row.active .prayer-arabic{color:rgba(196,164,97,0.5);}
+    .prayer-right-col{text-align:right;flex-shrink:0;}
+    .prayer-time{font-size:19px;font-weight:700;color:rgba(255,255,255,0.9);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+    .prayer-row.active .prayer-time{color:#fff;}
+    .active-badge{
+      display:inline-block;margin-top:4px;
+      font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+      color:#0a0f1e;background:#c4a461;border-radius:6px;padding:3px 9px;
+    }
 
     /* ── Qibla ── */
-    .qibla-page{align-items:center;justify-content:flex-start;padding:max(env(safe-area-inset-top),48px) 24px 24px;gap:0;}
-    .qibla-title{font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px;animation:fadeUp 0.5s ease both;}
-    .qibla-subtitle{font-size:32px;font-family:"Bebas Neue",sans-serif;letter-spacing:0.06em;color:#fff;margin-bottom:32px;animation:fadeUp 0.5s 0.1s ease both;}
-    .compass-wrap{position:relative;width:260px;height:260px;margin:0 auto 32px;animation:scaleIn 0.6s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;}
-    .compass-ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,255,255,0.1);background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.05),transparent 70%);}
-    .compass-ring::before{content:"N";position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);}
-    .compass-ring::after{content:"S";position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:700;color:rgba(255,255,255,0.25);}
-    .compass-e{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:rgba(255,255,255,0.25);}
-    .compass-w{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:700;color:rgba(255,255,255,0.25);}
-    .compass-needle{position:absolute;inset:0;border-radius:50%;transition:transform 0.3s ease;display:flex;align-items:center;justify-content:center;}
-    .needle-kaaba{position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:28px;filter:drop-shadow(0 0 8px rgba(196,164,97,0.6));}
-    .needle-line{position:absolute;width:3px;height:100px;background:linear-gradient(to bottom,#c4a461,rgba(196,164,97,0.1));border-radius:2px;top:50%;left:50%;transform:translateX(-50%) translateY(-100%);}
-    .needle-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:#c4a461;top:50%;left:50%;transform:translate(-50%,-50%);}
-    .compass-glow{position:absolute;inset:10px;border-radius:50%;background:radial-gradient(circle,rgba(196,164,97,0.06) 0%,transparent 70%);}
-    .qibla-info{text-align:center;animation:fadeUp 0.5s 0.4s ease both;}
-    .qibla-bearing{font-size:42px;font-family:"Bebas Neue",sans-serif;color:#c4a461;letter-spacing:0.06em;}
-    .qibla-desc{font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px;}
-    .qibla-permission{margin-top:20px;background:rgba(196,164,97,0.1);border:1px solid rgba(196,164,97,0.25);border-radius:14px;padding:16px 20px;text-align:center;cursor:pointer;transition:all 0.2s;animation:fadeUp 0.5s 0.5s ease both;}
+    .qibla-wrap{
+      display:flex;flex-direction:column;align-items:center;
+      padding:max(env(safe-area-inset-top),52px) 24px 24px;
+      flex:1;
+    }
+    .qibla-title{font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;}
+    .qibla-subtitle{font-size:36px;font-family:"Bebas Neue",sans-serif;letter-spacing:0.06em;color:#fff;margin-bottom:28px;}
+    .compass-wrap{position:relative;width:260px;height:260px;margin:0 auto 28px;}
+    .compass-ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(255,255,255,0.1);background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.04),transparent 70%);}
+    .compass-ring::before{content:"N";position:absolute;top:12px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:rgba(255,255,255,0.35);}
+    .compass-ring::after{content:"S";position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:rgba(255,255,255,0.2);}
+    .compass-e{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:rgba(255,255,255,0.2);}
+    .compass-w{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:rgba(255,255,255,0.2);}
+    .compass-needle{position:absolute;inset:0;border-radius:50%;transition:transform 0.25s ease;display:flex;align-items:center;justify-content:center;}
+    .needle-kaaba{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-size:30px;filter:drop-shadow(0 0 10px rgba(196,164,97,0.5));}
+    .needle-line{position:absolute;width:2px;height:96px;background:linear-gradient(to bottom,#c4a461,rgba(196,164,97,0.05));border-radius:2px;top:50%;left:50%;transform:translateX(-50%) translateY(-100%);}
+    .needle-dot{position:absolute;width:10px;height:10px;border-radius:50%;background:#c4a461;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(196,164,97,0.6);}
+    .compass-glow{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(196,164,97,0.05) 0%,transparent 70%);}
+    .qibla-info{text-align:center;}
+    .qibla-bearing{font-size:48px;font-family:"Bebas Neue",sans-serif;color:#c4a461;letter-spacing:0.06em;}
+    .qibla-desc{font-size:13px;color:rgba(255,255,255,0.35);margin-top:2px;}
+    .qibla-permission{
+      margin-top:20px;width:100%;max-width:300px;
+      background:rgba(196,164,97,0.08);border:1px solid rgba(196,164,97,0.2);
+      border-radius:18px;padding:18px 20px;text-align:center;cursor:pointer;
+      transition:all 0.18s;
+    }
     .qibla-permission:active{transform:scale(0.97);}
-    .qibla-permission p{font-size:13px;color:rgba(255,255,255,0.5);margin-top:6px;}
+    .qibla-permission p{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px;line-height:1.5;}
 
     /* ── Quote ── */
-    .quote-page{align-items:center;justify-content:center;padding:max(env(safe-area-inset-top),48px) 28px 24px;gap:0;min-height:100%;}
-    .quote-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(196,164,97,0.6);margin-bottom:28px;animation:fadeUp 0.4s ease both;}
-    .quote-ornament{font-size:52px;color:rgba(196,164,97,0.15);line-height:1;margin-bottom:16px;font-family:Georgia,serif;}
-    .quote-text{font-size:20px;font-weight:500;color:#fff;line-height:1.65;text-align:center;margin-bottom:20px;animation:quoteIn 0.6s 0.1s ease both;}
-    .quote-source{font-size:13px;font-weight:600;color:#c4a461;letter-spacing:0.06em;animation:fadeIn 0.5s 0.4s ease both;}
-    .quote-divider{width:40px;height:2px;background:rgba(196,164,97,0.3);border-radius:1px;margin:20px auto;animation:fadeIn 0.5s 0.5s ease both;}
-    .quote-refresh{display:inline-flex;align-items:center;gap:7px;margin-top:8px;background:rgba(196,164,97,0.08);border:1px solid rgba(196,164,97,0.18);border-radius:100px;padding:9px 22px;font-size:12px;font-weight:700;color:#c4a461;cursor:pointer;letter-spacing:0.06em;transition:all 0.2s;animation:scaleIn 0.5s 0.6s ease both;}
+    .quote-wrap{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      flex:1;padding:max(env(safe-area-inset-top),52px) 32px 32px;text-align:center;
+    }
+    .quote-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(196,164,97,0.55);margin-bottom:24px;}
+    .quote-ornament{font-size:56px;color:rgba(196,164,97,0.12);line-height:1;margin-bottom:12px;font-family:Georgia,serif;}
+    .quote-text{font-size:19px;font-weight:500;color:#fff;line-height:1.7;margin-bottom:18px;animation:quoteIn 0.5s ease both;}
+    .quote-source{font-size:13px;font-weight:600;color:#c4a461;letter-spacing:0.06em;}
+    .quote-divider{width:36px;height:2px;background:rgba(196,164,97,0.25);border-radius:1px;margin:20px auto;}
+    .quote-refresh{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(196,164,97,0.08);border:1px solid rgba(196,164,97,0.18);
+      border-radius:100px;padding:10px 24px;font-size:12px;font-weight:700;
+      color:#c4a461;cursor:pointer;letter-spacing:0.06em;transition:all 0.18s;
+    }
     .quote-refresh:active{transform:scale(0.95);}
   </style>
 </head>
@@ -141,12 +209,12 @@
 <div class="app">
   <div class="pages">
 
-    <!-- ── Prayers page ── -->
+    <!-- Prayers -->
     <div class="page active" id="page-prayers">
       <div class="hero">
         <button class="notif-btn" id="notif-btn">🔔</button>
         <div class="notif-toast" id="notif-toast"></div>
-        <div class="hero-location">Sharjah &middot; UAE</div>
+        <div class="hero-location" id="hero-location">Sharjah · UAE</div>
         <div class="hero-date" id="hero-date"></div>
         <div class="hero-hijri" id="hero-hijri"></div>
         <div class="hero-label" id="hero-label">Next prayer</div>
@@ -156,15 +224,12 @@
         <div class="progress-labels"><span id="prog-left"></span><span id="prog-right"></span></div>
         <div class="countdown-pill"><div class="cd-dot"></div><span id="countdown">—</span></div>
       </div>
-      <div class="list-wrap">
-        <div class="section-title">Today</div>
-        <div id="prayers"></div>
-      </div>
+      <div class="list-wrap" id="prayers"></div>
     </div>
 
-    <!-- ── Qibla page ── -->
+    <!-- Qibla -->
     <div class="page" id="page-qibla">
-      <div class="qibla-page" style="display:flex;flex-direction:column;align-items:center;padding:max(env(safe-area-inset-top),48px) 24px 24px;">
+      <div class="qibla-wrap">
         <div class="qibla-title">Direction of Prayer</div>
         <div class="qibla-subtitle">Qibla</div>
         <div class="compass-wrap">
@@ -183,17 +248,17 @@
           <div class="qibla-bearing" id="qibla-bearing">247°</div>
           <div class="qibla-desc">from North · towards Mecca</div>
         </div>
-        <div class="qibla-permission" id="qibla-permission" style="margin-top:24px;width:100%;max-width:320px;">
-          <div style="font-size:22px">🧭</div>
+        <div class="qibla-permission" id="qibla-permission">
+          <div style="font-size:24px">🧭</div>
           <div style="font-size:14px;font-weight:700;color:#fff;margin-top:6px;">Enable Live Compass</div>
           <p>Tap to use your phone sensor for real-time Qibla direction</p>
         </div>
       </div>
     </div>
 
-    <!-- ── Quote page ── -->
+    <!-- Quote -->
     <div class="page" id="page-quote">
-      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:max(env(safe-area-inset-top),48px) 28px 24px;">
+      <div class="quote-wrap">
         <div class="quote-label">Daily Reminder</div>
         <div class="quote-ornament">&ldquo;</div>
         <div class="quote-text" id="quote-text"></div>
@@ -205,7 +270,7 @@
 
   </div>
 
-  <!-- ── Tab bar ── -->
+  <!-- Tab bar -->
   <div class="tabs">
     <div class="tab active" data-page="prayers" id="tab-prayers">
       <div class="tab-icon">🕌</div>
@@ -227,15 +292,13 @@
 </script>
 <script>
 const PRAYERS=[
-  {key:"fajr",   en:"Fajr",   ar:"الفجر",    icon:"🌄"},
-  {key:"dhuhr",  en:"Dhuhr",  ar:"الظهر",   icon:"☀️"},
-  {key:"asr",    en:"Asr",    ar:"العصر",    icon:"🌅"},
-  {key:"maghrib",en:"Maghrib",ar:"المغرب",icon:"🌆"},
-  {key:"isha",   en:"Isha",   ar:"العشاء",   icon:"🌙"},
+  {key:"fajr",   en:"Fajr",   ar:"الفجر",  icon:"🌄"},
+  {key:"dhuhr",  en:"Dhuhr",  ar:"الظهر",  icon:"☀️"},
+  {key:"asr",    en:"Asr",    ar:"العصر",  icon:"🌅"},
+  {key:"maghrib",en:"Maghrib",ar:"المغرب", icon:"🌆"},
+  {key:"isha",   en:"Isha",   ar:"العشاء", icon:"🌙"},
 ];
-
-const QUOTES=[{"text": "Indeed, with hardship comes ease.", "source": "Quran 94:6"}, {"text": "Allah does not burden a soul beyond that it can bear.", "source": "Quran 2:286"}, {"text": "And He is with you wherever you are.", "source": "Quran 57:4"}, {"text": "Verily, the remembrance of Allah brings comfort to the heart.", "source": "Quran 13:28"}, {"text": "So remember Me; I will remember you.", "source": "Quran 2:152"}, {"text": "Call upon Me; I will respond to you.", "source": "Quran 40:60"}, {"text": "And seek help through patience and prayer.", "source": "Quran 2:45"}, {"text": "Do not lose hope, nor be sad.", "source": "Quran 3:139"}, {"text": "Speak good or remain silent.", "source": "Bukhari & Muslim"}, {"text": "The best of people are those who benefit others.", "source": "Al-Tabarani"}, {"text": "Smile at your brother \u2014 it is an act of charity.", "source": "Tirmidhi"}, {"text": "None of you truly believes until he loves for his brother what he loves for himself.", "source": "Bukhari & Muslim"}, {"text": "The strong person is not one who overcomes others. The strong person is one who controls themselves in anger.", "source": "Bukhari"}, {"text": "Make things easy and do not make them difficult.", "source": "Bukhari"}, {"text": "Be in this world as if you are a stranger or a traveller.", "source": "Bukhari"}, {"text": "Take advantage of five before five: youth before old age, health before illness, wealth before poverty, free time before busyness, and life before death.", "source": "Hakim"}, {"text": "The best among you are those who have the best manners and character.", "source": "Bukhari"}, {"text": "Allah is beautiful and loves beauty.", "source": "Muslim"}, {"text": "Whoever believes in Allah and the Last Day, let him say something good or remain silent.", "source": "Bukhari"}, {"text": "Kindness is a mark of faith, and whoever has no kindness has no faith.", "source": "Muslim"}, {"text": "Feed the hungry, visit the sick, and free the captive.", "source": "Bukhari"}, {"text": "The world is a prison for the believer and a paradise for the disbeliever.", "source": "Muslim"}, {"text": "Every act of kindness is charity.", "source": "Bukhari"}, {"text": "He who does not thank people, does not thank Allah.", "source": "Ahmad"}, {"text": "Verily Allah does not look at your appearance or wealth, but rather He looks at your hearts and actions.", "source": "Muslim"}, {"text": "O Turner of hearts, keep our hearts firm on Your religion.", "source": "Tirmidhi"}, {"text": "Whoever walks a path seeking knowledge, Allah will make easy for him a path to Paradise.", "source": "Muslim"}, {"text": "The best charity is that given when you yourself are in need.", "source": "Bukhari"}];
-
+const QUOTES=[{"text": "Indeed, with hardship comes ease.", "source": "Quran 94:6"}, {"text": "Allah does not burden a soul beyond that it can bear.", "source": "Quran 2:286"}, {"text": "And He is with you wherever you are.", "source": "Quran 57:4"}, {"text": "Verily, the remembrance of Allah brings comfort to the heart.", "source": "Quran 13:28"}, {"text": "So remember Me; I will remember you.", "source": "Quran 2:152"}, {"text": "Call upon Me; I will respond to you.", "source": "Quran 40:60"}, {"text": "And seek help through patience and prayer.", "source": "Quran 2:45"}, {"text": "Do not lose hope, nor be sad.", "source": "Quran 3:139"}, {"text": "Speak good or remain silent.", "source": "Bukhari & Muslim"}, {"text": "The best of people are those who benefit others.", "source": "Al-Tabarani"}, {"text": "Smile at your brother \u2014 it is an act of charity.", "source": "Tirmidhi"}, {"text": "None of you truly believes until he loves for his brother what he loves for himself.", "source": "Bukhari & Muslim"}, {"text": "The strong person is one who controls themselves in anger.", "source": "Bukhari"}, {"text": "Make things easy and do not make them difficult.", "source": "Bukhari"}, {"text": "Be in this world as if you are a stranger or a traveller.", "source": "Bukhari"}, {"text": "Take advantage of five before five: youth before old age, health before illness, wealth before poverty, free time before busyness, and life before death.", "source": "Hakim"}, {"text": "The best among you are those who have the best manners and character.", "source": "Bukhari"}, {"text": "Allah is beautiful and loves beauty.", "source": "Muslim"}, {"text": "Kindness is a mark of faith, and whoever has no kindness has no faith.", "source": "Muslim"}, {"text": "Every act of kindness is charity.", "source": "Bukhari"}, {"text": "He who does not thank people, does not thank Allah.", "source": "Ahmad"}, {"text": "Verily Allah does not look at your appearance or wealth, but rather He looks at your hearts and actions.", "source": "Muslim"}, {"text": "Whoever walks a path seeking knowledge, Allah will make easy for him a path to Paradise.", "source": "Muslim"}, {"text": "The best charity is that given when you yourself are in need.", "source": "Bukhari"}, {"text": "O Turner of hearts, keep our hearts firm on Your religion.", "source": "Tirmidhi"}, {"text": "Feed the hungry, visit the sick, and free the captive.", "source": "Bukhari"}, {"text": "Whoever believes in Allah and the Last Day, let him say something good or remain silent.", "source": "Bukhari"}, {"text": "The world is a prison for the believer and a paradise for the disbeliever.", "source": "Muslim"}];
 let USER_LAT=25.3463,USER_LNG=55.4209,USER_CITY="Sharjah";
 
 function calcTimes(date){
@@ -248,34 +311,15 @@ function calcTimes(date){
 function fmt(d){return d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true});}
 function hijri(d){try{return d.toLocaleDateString("en-US-u-ca-islamic",{day:"numeric",month:"long",year:"numeric"});}catch(e){return "";}}
 
-function initLocation(){
-  if(!navigator.geolocation) return;
-  navigator.geolocation.getCurrentPosition(pos=>{
-    USER_LAT=pos.coords.latitude;
-    USER_LNG=pos.coords.longitude;
-    // reverse geocode city name
-    fetch("https://nominatim.openstreetmap.org/reverse?lat="+USER_LAT+"&lon="+USER_LNG+"&format=json")
-      .then(r=>r.json()).then(d=>{
-        USER_CITY=d.address.city||d.address.town||d.address.village||d.address.county||"Your Location";
-        document.querySelectorAll(".hero-location").forEach(el=>el.textContent=USER_CITY+" · UAE");
-      }).catch(()=>{});
-    render();
-    // update qibla bearing
-    const b=calcQibla();
-    document.getElementById("qibla-bearing").textContent=Math.round(b)+"°";
-    document.getElementById("compass-needle").style.transform="rotate("+b+"deg)";
-  },()=>{},{ enableHighAccuracy:true, timeout:8000 });
-}
-
 // ── Tabs ──
-document.querySelectorAll('.tab').forEach(tab=>{
-  tab.addEventListener('click',()=>{
+document.querySelectorAll(".tab").forEach(tab=>{
+  tab.addEventListener("click",()=>{
     const pg=tab.dataset.page;
-    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('page-'+pg).classList.add('active');
-    if(pg==='quote') renderQuote();
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+    tab.classList.add("active");
+    document.getElementById("page-"+pg).classList.add("active");
+    if(pg==="quote") renderQuote();
   });
 });
 
@@ -287,34 +331,59 @@ function render(){
   const times=calcTimes(today);
   document.getElementById("hero-date").textContent=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
   document.getElementById("hero-hijri").textContent=hijri(now);
+
   const keys=PRAYERS.map(p=>p.key);
   let activeIdx=-1;
   for(let i=0;i<keys.length;i++) if(now>=times[keys[i]]) activeIdx=i;
+
+  // next prayer (may be tomorrow's Fajr)
   let nextIdx=-1;
   for(let i=0;i<keys.length;i++) if(times[keys[i]]>now){nextIdx=i;break;}
+
+  let nextTime=null;
+  let nextName="Fajr";
   if(nextIdx>=0){
+    nextTime=times[keys[nextIdx]];
+    nextName=PRAYERS[nextIdx].en;
     document.getElementById("hero-label").textContent="Next prayer";
-    document.getElementById("hero-name").textContent=PRAYERS[nextIdx].en;
-    document.getElementById("hero-time").textContent=fmt(times[PRAYERS[nextIdx].key]);
+    document.getElementById("hero-name").textContent=nextName;
+    document.getElementById("hero-time").textContent=fmt(nextTime);
   } else {
-    document.getElementById("hero-label").textContent="All done";
-    document.getElementById("hero-name").textContent="See you at Fajr";
-    document.getElementById("hero-time").textContent="";
+    // all done — show tomorrow's Fajr
+    const tomorrow=new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+    const tomorrowTimes=calcTimes(tomorrow);
+    nextTime=tomorrowTimes.fajr;
+    document.getElementById("hero-label").textContent="Next prayer";
+    document.getElementById("hero-name").textContent="Fajr";
+    document.getElementById("hero-time").textContent=fmt(nextTime);
   }
+
+  // progress bar between current and next
   if(activeIdx>=0&&nextIdx>=0){
     const start=times[keys[activeIdx]],end=times[keys[nextIdx]];
     const pct=Math.min(100,Math.max(0,(now-start)/(end-start)*100));
     document.getElementById("progress-fill").style.width=pct.toFixed(1)+"%";
     document.getElementById("prog-left").textContent=PRAYERS[activeIdx].en+" "+fmt(start);
     document.getElementById("prog-right").textContent=PRAYERS[nextIdx].en+" "+fmt(end);
+  } else if(activeIdx>=0&&nextIdx<0){
+    // after Isha — progress toward tomorrow Fajr
+    const start=times[keys[activeIdx]];
+    const end=nextTime;
+    const pct=Math.min(100,Math.max(0,(now-start)/(end-start)*100));
+    document.getElementById("progress-fill").style.width=pct.toFixed(1)+"%";
+    document.getElementById("prog-left").textContent=PRAYERS[activeIdx].en+" "+fmt(start);
+    document.getElementById("prog-right").textContent="Fajr "+fmt(end);
   }
+
   const switched=activeIdx!==lastActiveIdx;
   lastActiveIdx=activeIdx;
-  document.getElementById("prayers").innerHTML=PRAYERS.map((p,i)=>{
+
+  const listEl=document.getElementById("prayers");
+  listEl.innerHTML=PRAYERS.map((p,i)=>{
     const isActive=activeIdx===i;
     const isPassed=times[p.key]<now&&!isActive;
-    const cls="prayer-row"+(isActive?" active":isPassed?" passed upcoming":" upcoming")+(switched?" animate-in":"");
-    const delay=switched?(i*0.07)+"s":"";
+    const cls="prayer-row"+(isActive?" active":isPassed?" passed":" upcoming")+(switched?" animate-in":"");
+    const delay=switched?(i*0.06)+"s":"";
     return "<div class=\""+cls+"\" style=\"animation-delay:"+delay+"\">"+
       "<div class=\"prayer-icon\">"+p.icon+"</div>"+
       "<div class=\"prayer-info\"><div class=\"prayer-name\">"+p.en+"</div><div class=\"prayer-arabic\">"+p.ar+"</div></div>"+
@@ -328,20 +397,29 @@ function tick(){
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const times=calcTimes(today);
   const keys=PRAYERS.map(p=>p.key);
-  let activeIdx=-1;
-  for(let i=0;i<keys.length;i++) if(now>=times[keys[i]]) activeIdx=i;
+
   let nextIdx=-1;
   for(let i=0;i<keys.length;i++) if(times[keys[i]]>now){nextIdx=i;break;}
-  const el=document.getElementById("countdown");
+
+  let nextTime,nextName;
   if(nextIdx>=0){
-    const diff=times[keys[nextIdx]]-now;
-    const h=Math.floor(diff/3600000);
-    const m=Math.floor((diff%3600000)/60000);
-    const s=Math.floor((diff%60000)/1000);
-    el.textContent=(h>0?h+"h "+String(m).padStart(2,"0")+"m":String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"))+" until "+PRAYERS[nextIdx].en;
+    nextTime=times[keys[nextIdx]];
+    nextName=PRAYERS[nextIdx].en;
   } else {
-    el.textContent="Done for today";
+    const tomorrow=new Date(today); tomorrow.setDate(tomorrow.getDate()+1);
+    nextTime=calcTimes(tomorrow).fajr;
+    nextName="Fajr";
   }
+
+  const diff=nextTime-now;
+  const h=Math.floor(diff/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  const el=document.getElementById("countdown");
+  el.textContent=(h>0?h+"h "+String(m).padStart(2,"0")+"m":String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"))+" until "+nextName;
+
+  let activeIdx=-1;
+  for(let i=0;i<keys.length;i++) if(now>=times[keys[i]]) activeIdx=i;
   if(activeIdx>=0&&nextIdx>=0){
     const start=times[keys[activeIdx]],end=times[keys[nextIdx]];
     const pct=Math.min(100,Math.max(0,(now-start)/(end-start)*100));
@@ -350,9 +428,26 @@ function tick(){
   if(now.getSeconds()===0) render();
 }
 
+// ── Location ──
+function initLocation(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(pos=>{
+    USER_LAT=pos.coords.latitude;
+    USER_LNG=pos.coords.longitude;
+    fetch("https://nominatim.openstreetmap.org/reverse?lat="+USER_LAT+"&lon="+USER_LNG+"&format=json")
+      .then(r=>r.json()).then(d=>{
+        USER_CITY=d.address.city||d.address.town||d.address.village||"Your Location";
+        document.getElementById("hero-location").textContent=USER_CITY+" · UAE";
+      }).catch(()=>{});
+    render();
+    const b=calcQibla();
+    document.getElementById("qibla-bearing").textContent=Math.round(b)+"°";
+    document.getElementById("compass-needle").style.transform="rotate("+b+"deg)";
+  },()=>{},{enableHighAccuracy:true,timeout:8000});
+}
+
 // ── Qibla ──
 const MECCA={lat:21.3891,lng:39.8579};
-const MY={lat:25.3463,lng:55.4209};
 function calcQibla(){
   const toR=d=>d*Math.PI/180;
   const dLng=toR(MECCA.lng-USER_LNG);
@@ -364,32 +459,22 @@ const QIBLA_BEARING=calcQibla();
 document.getElementById("qibla-bearing").textContent=Math.round(QIBLA_BEARING)+"°";
 document.getElementById("compass-needle").style.transform="rotate("+QIBLA_BEARING+"deg)";
 
-let compassActive=false;
 document.getElementById("qibla-permission").addEventListener("click",async()=>{
-  if(compassActive) return;
   if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"){
-    try{
-      const perm=await DeviceOrientationEvent.requestPermission();
-      if(perm==="granted") startCompass();
-    }catch(e){}
-  } else {
-    startCompass();
-  }
+    try{const perm=await DeviceOrientationEvent.requestPermission();if(perm==="granted") startCompass();}catch(e){}
+  } else startCompass();
 });
 
+let smoothAngle=null;
 function startCompass(){
-  compassActive=true;
   document.getElementById("qibla-permission").style.display="none";
   window.addEventListener("deviceorientationabsolute",handleOrientation,true);
   window.addEventListener("deviceorientation",handleOrientation,true);
 }
-
-let smoothAngle=null;
 function handleOrientation(e){
   let heading=e.webkitCompassHeading!=null?e.webkitCompassHeading:-(e.alpha||0);
-  let raw=(QIBLA_BEARING-heading+360)%360;
+  let raw=(calcQibla()-heading+360)%360;
   if(smoothAngle===null){smoothAngle=raw;}
-  // shortest-path smoothing to avoid spinning through 360
   let diff=raw-smoothAngle;
   if(diff>180) diff-=360;
   if(diff<-180) diff+=360;
@@ -403,16 +488,11 @@ let quoteIdx=Math.floor(new Date().getDate()*9.3)%QUOTES.length;
 function renderQuote(){
   const q=QUOTES[quoteIdx];
   const el=document.getElementById("quote-text");
-  el.style.animation="none";
-  el.offsetHeight;
-  el.style.animation="quoteIn 0.6s ease both";
+  el.style.animation="none"; el.offsetHeight; el.style.animation="quoteIn 0.5s ease both";
   el.textContent=q.text;
   document.getElementById("quote-source").textContent="— "+q.source;
 }
-document.getElementById("quote-refresh").addEventListener("click",()=>{
-  quoteIdx=(quoteIdx+1)%QUOTES.length;
-  renderQuote();
-});
+document.getElementById("quote-refresh").addEventListener("click",()=>{quoteIdx=(quoteIdx+1)%QUOTES.length;renderQuote();});
 renderQuote();
 
 // ── Notifications ──
@@ -430,12 +510,10 @@ async function requestNotifications(){
   if(perm==="granted"){
     document.getElementById("notif-btn").classList.add("enabled");
     showToast("Notifications enabled!");
-    const today=new Date();today.setHours(0,0,0,0);
+    const today=new Date(); today.setHours(0,0,0,0);
     scheduleNotifications(calcTimes(today));
     localStorage.setItem("notif","1");
-  } else {
-    showToast("Please allow notifications in Settings");
-  }
+  } else showToast("Allow notifications in Settings");
 }
 document.getElementById("notif-btn").addEventListener("click",requestNotifications);
 
@@ -451,7 +529,7 @@ if("serviceWorker" in navigator){
   }).then(reg=>{
     if(localStorage.getItem("notif")==="1"&&Notification.permission==="granted"){
       document.getElementById("notif-btn").classList.add("enabled");
-      const today=new Date();today.setHours(0,0,0,0);
+      const today=new Date(); today.setHours(0,0,0,0);
       setTimeout(()=>scheduleNotifications(calcTimes(today)),1000);
     }
   });
