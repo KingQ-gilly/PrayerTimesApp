@@ -21,6 +21,7 @@ self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SCHEDULE_PRAYERS') {
     scheduledTimers.forEach(t => clearTimeout(t));
     scheduledTimers = [];
+
     const now = Date.now();
     e.data.prayers.forEach(p => {
       const delay = p.time - now;
@@ -29,6 +30,7 @@ self.addEventListener('message', e => {
           self.registration.showNotification(p.name + ' Prayer Time', {
             body: 'It is time for ' + p.name + ' (' + p.arabic + ')',
             icon: 'icon-192.png',
+            badge: 'icon-192.png',
             tag: 'prayer-' + p.name,
             renotify: true,
             vibrate: [200, 100, 200],
