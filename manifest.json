@@ -2,10 +2,11 @@
   "name": "Prayer Times — Sharjah",
   "short_name": "Prayer Times",
   "description": "Daily prayer times for Sharjah, UAE",
-  "start_url": "/",
+  "start_url": "/PrayerTimesApp/",
+  "scope": "/PrayerTimesApp/",
   "display": "standalone",
-  "background_color": "#0a1628",
-  "theme_color": "#0a1628",
+  "background_color": "#0a0f1e",
+  "theme_color": "#0a0f1e",
   "orientation": "portrait",
   "icons": [
     {
