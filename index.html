@@ -340,6 +340,9 @@ function render(){
   let nextIdx=-1;
   for(let i=0;i<keys.length;i++) if(times[keys[i]]>now){nextIdx=i;break;}
 
+  // if all prayers done, clear active so nothing shows "now"
+  if(nextIdx<0) activeIdx=-1;
+
   let nextTime=null;
   let nextName="Fajr";
   if(nextIdx>=0){
