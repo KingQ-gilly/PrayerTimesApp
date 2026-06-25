@@ -63,7 +63,7 @@
     /* ── Hero ── */
     .hero{
       flex-shrink:0;
-      padding:max(env(safe-area-inset-top),52px) 24px 20px;
+      padding:max(env(safe-area-inset-top),44px) 24px 16px;
       background:linear-gradient(170deg,#0d1e42 0%,#0a0f1e 100%);
       position:relative;overflow:hidden;text-align:center;
     }
@@ -89,9 +89,11 @@
       white-space:nowrap;transition:bottom 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;
     }
     .notif-toast.show{bottom:14px;}
-    .hero-location{font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.35);animation:fadeIn 0.4s ease both;}
-    .hero-date{font-size:16px;font-weight:700;color:rgba(255,255,255,0.9);margin-top:2px;animation:fadeUp 0.4s 0.05s ease both;}
-    .hero-hijri{font-size:12px;color:rgba(255,255,255,0.28);margin-top:1px;margin-bottom:14px;animation:fadeUp 0.4s 0.08s ease both;}
+    .hero-meta{display:flex;align-items:center;gap:8px;justify-content:center;animation:fadeUp 0.4s ease both;}
+    .hero-date{font-size:15px;font-weight:700;color:rgba(255,255,255,0.9);}
+    .hero-meta-dot{font-size:13px;color:rgba(255,255,255,0.25);}
+    .hero-location{font-size:13px;font-weight:500;color:rgba(255,255,255,0.4);}
+    .hero-hijri{font-size:11px;color:rgba(255,255,255,0.25);margin-top:3px;margin-bottom:12px;animation:fadeUp 0.4s 0.05s ease both;}
     .hero-label{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#c4a461;opacity:0.9;animation:fadeUp 0.4s 0.1s ease both;}
     .hero-prayer-name{font-size:52px;font-weight:700;color:#fff;letter-spacing:0.05em;line-height:1;font-family:"Bebas Neue",sans-serif;margin-top:4px;animation:fadeUp 0.5s 0.12s cubic-bezier(0.22,1,0.36,1) both;}
     .hero-prayer-time{font-size:64px;font-weight:700;color:#fff;letter-spacing:0.03em;line-height:1;font-variant-numeric:tabular-nums;font-family:"Bebas Neue",sans-serif;margin-top:2px;margin-bottom:14px;animation:fadeUp 0.5s 0.15s cubic-bezier(0.22,1,0.36,1) both;}
@@ -111,16 +113,19 @@
       flex:1;
       display:flex;
       flex-direction:column;
-      padding:12px 16px max(env(safe-area-inset-bottom),16px);
-      gap:10px;
+      padding:8px 16px max(env(safe-area-inset-bottom),8px);
+      gap:8px;
       min-height:0;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
     }
     .prayer-row{
       flex:1;
       display:flex;align-items:center;
       padding:0 18px;
       border-radius:20px;
-      min-height:64px;
+      min-height:72px;
+      max-height:90px;
       transition:transform 0.2s ease,background 0.3s ease;
     }
     .prayer-row.passed{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);opacity:0.38;}
@@ -214,8 +219,11 @@
       <div class="hero">
         <button class="notif-btn" id="notif-btn">🔔</button>
         <div class="notif-toast" id="notif-toast"></div>
-        <div class="hero-location" id="hero-location">Sharjah · UAE</div>
-        <div class="hero-date" id="hero-date"></div>
+        <div class="hero-meta">
+          <span class="hero-date" id="hero-date"></span>
+          <span class="hero-meta-dot">·</span>
+          <span class="hero-location" id="hero-location">Sharjah</span>
+        </div>
         <div class="hero-hijri" id="hero-hijri"></div>
         <div class="hero-label" id="hero-label">Next prayer</div>
         <div class="hero-prayer-name" id="hero-name"></div>
