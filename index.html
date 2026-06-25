@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Prayer Times"/>
@@ -306,24 +309,80 @@
     .q-btn-sub   { font-size: 12px; color: var(--label3); margin-top: 4px; line-height: 1.4; }
 
     /* ── Quote ── */
+    @keyframes quoteReveal {
+      0%   { opacity: 0; transform: translateY(18px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes ornamentFade {
+      from { opacity: 0; transform: scaleX(0.6); }
+      to   { opacity: 1; transform: scaleX(1); }
+    }
     .quote-wrap {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: max(env(safe-area-inset-top), 52px) 28px 28px;
-      text-align: center;
+      padding: max(env(safe-area-inset-top), 52px) 32px max(env(safe-area-inset-bottom), 32px);
+      text-align: center; position: relative; overflow: hidden;
     }
-    .q-tag    { font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(196,164,97,0.55); margin-bottom: 28px; }
-    .q-mark   { font-size: 52px; color: var(--fill1); line-height: 1; margin-bottom: 8px; font-family: Georgia, serif; }
-    .q-text   { font-size: 20px; font-weight: 400; color: var(--label1); line-height: 1.65; letter-spacing: -0.2px; margin-bottom: 20px; animation: quoteSlide 0.5s var(--ease-out) both; }
-    .q-source { font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
-    .q-line   { width: 32px; height: 1px; background: var(--sep); margin: 22px auto; }
-    .q-new    {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--fill2); border: 1px solid var(--sep); border-radius: 100px;
-      padding: 10px 24px; font-size: 13px; font-weight: 600; color: var(--label2);
-      cursor: pointer; transition: transform 0.15s var(--ease-out), background 0.15s;
+    .quote-wrap::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(196,164,97,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .q-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(196,164,97,0.45); margin-bottom: 40px;
+    }
+    .q-ornament-top {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+      animation: ornamentFade 0.6s var(--ease-out) both;
+    }
+    .q-orn-line { flex: 1; height: 0.5px; background: linear-gradient(90deg, transparent, rgba(196,164,97,0.35), transparent); max-width: 60px; }
+    .q-orn-diamond {
+      width: 6px; height: 6px; background: var(--accent);
+      transform: rotate(45deg); opacity: 0.7;
+    }
+    .q-mark {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 80px; font-weight: 300; font-style: italic;
+      color: rgba(196,164,97,0.18); line-height: 0.6;
+      margin-bottom: 20px; display: block;
+      animation: ornamentFade 0.5s 0.1s var(--ease-out) both;
+    }
+    .q-text {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 26px; font-weight: 400; font-style: italic;
+      color: var(--label1); line-height: 1.6; letter-spacing: 0.01em;
+      margin-bottom: 24px; max-width: 320px;
+      animation: quoteReveal 0.55s var(--ease-out) both;
+    }
+    .q-source {
+      font-family: -apple-system, sans-serif;
+      font-size: 12px; font-weight: 600; color: var(--accent);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      animation: quoteReveal 0.5s 0.08s var(--ease-out) both;
+    }
+    .q-ornament-bot {
+      display: flex; align-items: center; gap: 12px; margin-top: 28px; margin-bottom: 32px;
+      animation: ornamentFade 0.6s 0.15s var(--ease-out) both;
+    }
+    .q-new {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--fill2); border: 0.5px solid rgba(196,164,97,0.25);
+      border-radius: 100px; padding: 13px 28px;
+      font-family: -apple-system, sans-serif;
+      font-size: 13px; font-weight: 600; color: rgba(196,164,97,0.8);
+      cursor: pointer; touch-action: manipulation;
+      transition: transform 0.15s var(--ease-out), background 0.15s, opacity 0.15s;
       -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      min-height: 44px;
     }
-    .q-new:active { transform: scale(0.95); background: var(--fill1); }
+    .q-new:active { transform: scale(0.95); opacity: 0.7; }
+    .q-notif-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 16px;
+      font-family: -apple-system, sans-serif;
+      font-size: 12px; color: var(--label3);
+    }
+    .q-notif-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); opacity: 0.5; }
   </style>
 </head>
 <body>
@@ -379,11 +438,24 @@
     <div class="page" id="page-quote">
       <div class="quote-wrap">
         <div class="q-tag">Daily Reminder</div>
+        <div class="q-ornament-top">
+          <div class="q-orn-line"></div>
+          <div class="q-orn-diamond"></div>
+          <div class="q-orn-line"></div>
+        </div>
         <div class="q-mark">&ldquo;</div>
         <div class="q-text"   id="q-text"></div>
         <div class="q-source" id="q-src"></div>
-        <div class="q-line"></div>
-        <div class="q-new" id="q-new">↻ &nbsp;New quote</div>
+        <div class="q-ornament-bot">
+          <div class="q-orn-line"></div>
+          <div class="q-orn-diamond"></div>
+          <div class="q-orn-line"></div>
+        </div>
+        <div class="q-new" id="q-new">↻ &ensp;New quote</div>
+        <div class="q-notif-row" id="q-notif-row">
+          <div class="q-notif-dot"></div>
+          <span id="q-notif-label">Enable notifications to receive daily reminders</span>
+        </div>
       </div>
     </div>
 
@@ -618,22 +690,44 @@ let qi=Math.floor(new Date().getDate()*9.3)%QUOTES.length;
 function renderQ(){
   const q=QUOTES[qi];
   const el=document.getElementById("q-text");
-  el.style.animation="none"; el.offsetHeight; el.style.animation="quoteSlide 0.5s cubic-bezier(0.22,1,0.36,1) both";
+  const src=document.getElementById("q-src");
+  el.style.animation="none"; src.style.animation="none";
+  el.offsetHeight;
+  el.style.animation="quoteReveal 0.55s cubic-bezier(0.22,1,0.36,1) both";
+  src.style.animation="quoteReveal 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both";
   el.textContent=q.text;
-  document.getElementById("q-src").textContent="— "+q.source;
+  src.textContent=q.source;
+  // update notif row
+  const notifLabel=document.getElementById("q-notif-label");
+  if(Notification.permission==="granted"){
+    notifLabel.textContent="Daily reminders active at each prayer time";
+    document.querySelector(".q-notif-dot").style.background="#34c759";
+    document.querySelector(".q-notif-dot").style.opacity="1";
+  }
 }
 document.getElementById("q-new").addEventListener("click",()=>{qi=(qi+1)%QUOTES.length;renderQ();});
 renderQ();
 
-// notifications
-function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
+// schedule quote notifications alongside prayer notifications
 function scheduleN(T){
   if(!("serviceWorker" in navigator)) return;
   navigator.serviceWorker.ready.then(reg=>{
-    const data=PRAYERS.map(p=>({name:p.en,arabic:p.ar,time:T[p.key].getTime()}));
-    reg.active&&reg.active.postMessage({type:"SCHEDULE_PRAYERS",prayers:data});
+    const prayerData=PRAYERS.map(p=>({name:p.en,arabic:p.ar,time:T[p.key].getTime()}));
+    // pick a random quote for today
+    const todayQ=QUOTES[Math.floor(new Date().getDate()*9.3)%QUOTES.length];
+    // send fajr time as quote notification trigger
+    const quoteTime=T.fajr.getTime();
+    reg.active&&reg.active.postMessage({
+      type:"SCHEDULE_PRAYERS",
+      prayers:prayerData,
+      quote:{text:todayQ.text,source:todayQ.source,time:quoteTime}
+    });
   });
 }
+
+// notifications
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
+
 async function reqNotif(){
   if(!("Notification" in window)){toast("Notifications not supported");return;}
   const p=await Notification.requestPermission();
