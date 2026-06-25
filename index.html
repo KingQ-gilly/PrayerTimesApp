@@ -384,10 +384,18 @@ function startCompass(){
   window.addEventListener("deviceorientation",handleOrientation,true);
 }
 
+let smoothAngle=null;
 function handleOrientation(e){
-  let heading=e.webkitCompassHeading||-(e.alpha||0);
-  const angle=(QIBLA_BEARING-heading+360)%360;
-  document.getElementById("compass-needle").style.transform="rotate("+angle+"deg)";
+  let heading=e.webkitCompassHeading!=null?e.webkitCompassHeading:-(e.alpha||0);
+  let raw=(QIBLA_BEARING-heading+360)%360;
+  if(smoothAngle===null){smoothAngle=raw;}
+  // shortest-path smoothing to avoid spinning through 360
+  let diff=raw-smoothAngle;
+  if(diff>180) diff-=360;
+  if(diff<-180) diff+=360;
+  smoothAngle+=diff*0.15;
+  smoothAngle=(smoothAngle+360)%360;
+  document.getElementById("compass-needle").style.transform="rotate("+smoothAngle.toFixed(1)+"deg)";
 }
 
 // ── Quotes ──
