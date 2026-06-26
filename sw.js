@@ -1,4 +1,4 @@
-const CACHE = 'prayer-times-v6';
+const CACHE = 'prayer-times-v8';
 
 self.addEventListener('install', e => { self.skipWaiting(); });
 
