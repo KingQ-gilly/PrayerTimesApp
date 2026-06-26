@@ -272,6 +272,149 @@
     .dq-new:active { transform:scale(0.95); }
 
     /* ══════════════════════════════════
+       DUA READER (full-screen overlay)
+    ══════════════════════════════════ */
+    .dua-reader {
+      position: fixed; inset: 0; z-index: 70;
+      background: #fff8f2; display: none;
+      flex-direction: column; overflow: hidden;
+      will-change: transform;
+    }
+    .dua-reader.open { display: flex; }
+
+    /* header */
+    .dr-nav {
+      flex-shrink: 0;
+      padding: max(env(safe-area-inset-top),46px) 20px 13px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      background: rgba(255,248,242,0.9);
+      -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(212,175,55,0.18);
+      position: relative; z-index: 2;
+    }
+    .dr-back {
+      display: flex; align-items: center; gap: 4px;
+      font-family: "DM Sans", sans-serif; font-size: 16px; color: var(--primary);
+      background: none; border: none; cursor: pointer; padding: 0;
+      min-height: 44px; min-width: 44px; touch-action: manipulation;
+      transition: opacity 0.15s;
+    }
+    .dr-back:active { opacity: 0.6; }
+    .dr-back-arrow { font-size: 22px; font-weight: 200; line-height: 1; }
+    .dr-cat-name { font-family: "Playfair Display", serif; font-size: 18px; font-weight: 700; color: var(--on-surface); position: absolute; left: 50%; transform: translateX(-50%); bottom: 13px; white-space: nowrap; }
+    .dr-counter { font-family: "DM Sans", sans-serif; font-size: 12px; font-weight: 600; color: rgba(115,92,0,0.5); letter-spacing: 0.04em; }
+
+    /* progress dots */
+    .dr-dots {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      gap: 5px; padding: 10px 20px 6px;
+    }
+    .dr-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: rgba(212,175,55,0.25);
+      transition: all 0.3s var(--spring);
+      flex-shrink: 0;
+    }
+    .dr-dot.active { background: var(--gold); transform: scale(1.5); }
+
+    /* viewport — clips the sliding cards */
+    .dr-viewport {
+      flex: 1; overflow: hidden; position: relative; min-height: 0;
+      touch-action: pan-y; /* allow vertical scroll on card but intercept horizontal */
+    }
+
+    /* track holds all dua cards side by side */
+    .dr-track {
+      display: flex; height: 100%;
+      will-change: transform;
+      transition: transform 0.38s cubic-bezier(0.25,1,0.5,1);
+    }
+    .dr-track.no-transition { transition: none; }
+
+    /* individual dua card */
+    .dr-card {
+      flex-shrink: 0; width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      padding: 0 20px max(env(safe-area-inset-bottom),28px);
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .dr-card::-webkit-scrollbar { display: none; }
+
+    /* Arabic text block */
+    .dr-arabic {
+      font-family: "Playfair Display", serif;
+      font-size: 28px; line-height: 1.9;
+      color: var(--primary); text-align: right;
+      direction: rtl; unicode-bidi: bidi-override;
+      margin: 24px 0 20px;
+      padding: 22px 20px;
+      border-radius: 18px;
+      background: rgba(212,175,55,0.06) padding-box,
+                  linear-gradient(135deg, rgba(212,175,55,0.3) 0%, rgba(212,175,55,0.06) 100%) border-box;
+      border: 1px solid transparent;
+    }
+
+    /* ornament divider */
+    .dr-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 4px 0 18px;
+    }
+    .dr-div-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent); }
+    .dr-div-diamond { width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); opacity: 0.6; flex-shrink: 0; }
+
+    /* transliteration */
+    .dr-translit {
+      font-family: "Playfair Display", serif;
+      font-size: 14px; font-style: italic;
+      color: rgba(115,92,0,0.55); text-align: center;
+      line-height: 1.8; margin-bottom: 16px;
+    }
+
+    /* English meaning */
+    .dr-meaning-label {
+      font-family: "DM Sans", sans-serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(115,92,0,0.45);
+      margin-bottom: 10px;
+    }
+    .dr-meaning {
+      font-family: "DM Sans", sans-serif;
+      font-size: 15px; line-height: 1.75;
+      color: var(--on-surface);
+    }
+
+    /* source pill */
+    .dr-source {
+      display: inline-flex; align-items: center;
+      margin-top: 18px; padding: 6px 14px;
+      background: rgba(212,175,55,0.10);
+      border: 1px solid rgba(212,175,55,0.22);
+      border-radius: 9999px;
+      font-family: "DM Sans", sans-serif;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--primary);
+    }
+
+    /* swipe hint arrows */
+    .dr-swipe-hint {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 24px max(calc(env(safe-area-inset-bottom) + 4px), 12px);
+      pointer-events: none;
+    }
+    .dr-hint-arrow {
+      font-size: 18px; color: rgba(212,175,55,0.35);
+      transition: opacity 0.3s;
+      pointer-events: all; cursor: pointer;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: rgba(212,175,55,0.08);
+    }
+    .dr-hint-arrow:active { background: rgba(212,175,55,0.18); }
+    .dr-hint-arrow.hidden { opacity: 0; pointer-events: none; }
+
+    /* ══════════════════════════════════
        SETTINGS PAGE
     ══════════════════════════════════ */
     .settings-wrap {
@@ -536,25 +679,25 @@
           <span class="duas-section-sub">by occasion</span>
         </div>
         <div class="duas-cats">
-          <div class="dua-cat glass-card">
+          <div class="dua-cat glass-card" onclick="openDuaReader('morning')">
             <div class="dua-cat-icon">✦</div>
             <div class="dua-cat-name">Morning &amp; Evening</div>
-            <div class="dua-cat-count">24 duas</div>
+            <div class="dua-cat-count">8 duas</div>
           </div>
-          <div class="dua-cat glass-card">
+          <div class="dua-cat glass-card" onclick="openDuaReader('travel')">
             <div class="dua-cat-icon">✈</div>
             <div class="dua-cat-name">Travel</div>
-            <div class="dua-cat-count">12 duas</div>
+            <div class="dua-cat-count">6 duas</div>
           </div>
-          <div class="dua-cat glass-card">
+          <div class="dua-cat glass-card" onclick="openDuaReader('protection')">
             <div class="dua-cat-icon">◈</div>
             <div class="dua-cat-name">Protection</div>
-            <div class="dua-cat-count">18 duas</div>
+            <div class="dua-cat-count">7 duas</div>
           </div>
-          <div class="dua-cat glass-card">
+          <div class="dua-cat glass-card" onclick="openDuaReader('patience')">
             <div class="dua-cat-icon">❋</div>
             <div class="dua-cat-name">Patience</div>
-            <div class="dua-cat-count">9 duas</div>
+            <div class="dua-cat-count">6 duas</div>
           </div>
         </div>
         <div class="duas-section-title">Daily Quote</div>
@@ -657,6 +800,26 @@
     </div>
   </div>
 </div><!-- .app -->
+
+<!-- ── DUA READER ── -->
+<div class="dua-reader" id="dua-reader">
+  <div class="dr-nav">
+    <button class="dr-back" id="dr-back">
+      <span class="dr-back-arrow">‹</span>
+      <span>Back</span>
+    </button>
+    <div class="dr-cat-name" id="dr-cat-name"></div>
+    <div class="dr-counter" id="dr-counter">1 / 1</div>
+  </div>
+  <div class="dr-dots" id="dr-dots"></div>
+  <div class="dr-viewport" id="dr-viewport">
+    <div class="dr-track" id="dr-track"></div>
+  </div>
+  <div class="dr-swipe-hint">
+    <button class="dr-hint-arrow" id="dr-prev">‹</button>
+    <button class="dr-hint-arrow" id="dr-next">›</button>
+  </div>
+</div>
 
 <!-- Full-Screen Prayer Detail -->
 <div class="detail-screen" id="detail-screen" style="display:none">
@@ -1114,6 +1277,365 @@ function closeDetail(){
     }
     dragY=0;
   },{passive:true});
+})();
+
+// ══════════════════════════════════
+// DUA READER
+// ══════════════════════════════════
+const DUA_CATS = {
+  morning: {
+    name: "Morning & Evening",
+    duas: [
+      {
+        arabic: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+        translit: "Asbahna wa asbahal mulku lillah, walhamdu lillah, la ilaha illallahu wahdahu la sharika lah, lahul mulku walahul hamdu wa huwa 'ala kulli shay'in qadir.",
+        meaning: "We have entered the morning and the whole kingdom belongs to Allah. All praise is for Allah. None has the right to be worshipped but Allah, alone, without partner. To Him belongs all sovereignty and praise, and He is over all things omnipotent.",
+        source: "Muslim"
+      },
+      {
+        arabic: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ",
+        translit: "Allahumma bika asbahna, wa bika amsayna, wa bika nahya, wa bika namutu, wa ilaikan-nushur.",
+        meaning: "O Allah, by You we enter the morning and by You we enter the evening. By You we live and by You we die, and to You is the resurrection.",
+        source: "Tirmidhi"
+      },
+      {
+        arabic: "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ",
+        translit: "Allahumma anta rabbi la ilaha illa ant, khalaqtani wa ana 'abduk, wa ana 'ala 'ahdika wa wa'dika mastata't.",
+        meaning: "O Allah, You are my Lord. None has the right to be worshipped except You. You created me and I am Your servant. I am keeping my covenant with You and my pledge to You as best I can.",
+        source: "Bukhari"
+      },
+      {
+        arabic: "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+        translit: "Subhanallahi wa bihamdih.",
+        meaning: "Glory and praise be to Allah. Recited one hundred times in the morning and evening, no one will come on the Day of Resurrection with better deeds than this.",
+        source: "Muslim"
+      },
+      {
+        arabic: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ",
+        translit: "Allahumma 'afini fi badani, Allahumma 'afini fi sam'i, Allahumma 'afini fi basari, la ilaha illa ant.",
+        meaning: "O Allah, grant me health in my body. O Allah, grant me health in my hearing. O Allah, grant me health in my sight. None has the right to be worshipped except You.",
+        source: "Abu Dawud"
+      },
+      {
+        arabic: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+        translit: "A'udhu bikalimatillahit-tammati min sharri ma khalaq.",
+        meaning: "I seek refuge in the perfect words of Allah from the evil of what He has created. Whoever says this three times in the evening will not be harmed by any insect that night.",
+        source: "Tirmidhi"
+      },
+      {
+        arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+        translit: "Bismillahil-ladhi la yadurru ma'asmihi shay'un fil-ardi wa la fis-sama'i wa huwas-sami'ul-'alim.",
+        meaning: "In the name of Allah, with whose name nothing can cause harm on earth or in the heavens, and He is the All-Hearing, All-Knowing. Whoever says this three times morning and evening will not be afflicted by any sudden calamity.",
+        source: "Abu Dawud"
+      },
+      {
+        arabic: "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ نَبِيًّا",
+        translit: "Raditu billahi rabban, wa bil-islami dinan, wa bi-Muhammadin nabiyyan.",
+        meaning: "I am pleased with Allah as my Lord, with Islam as my religion, and with Muhammad ﷺ as my Prophet. Whoever says this three times in the morning and evening, it is a right upon Allah to please him on the Day of Resurrection.",
+        source: "Ibn Majah"
+      }
+    ]
+  },
+  travel: {
+    name: "Travel",
+    duas: [
+      {
+        arabic: "اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ",
+        translit: "Allahu Akbar, Allahu Akbar, Allahu Akbar. Subhanal-ladhi sakhkhara lana hadha wa ma kunna lahu muqrinin, wa inna ila rabbina lamunqalibun.",
+        meaning: "Allah is the Greatest (×3). Glory be to He who has subjected this to us, and we were not capable of that, and indeed we are returning to our Lord.",
+        source: "Abu Dawud"
+      },
+      {
+        arabic: "اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَٰذَا الْبِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى",
+        translit: "Allahumma inna nas'aluka fi safarina hadhal birra wat-taqwa, wa minal 'amali ma tarda.",
+        meaning: "O Allah, we ask You on this journey of ours for righteousness and piety, and for works that are pleasing to You.",
+        source: "Muslim"
+      },
+      {
+        arabic: "اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَلِيفَةُ فِي الْأَهْلِ",
+        translit: "Allahumma antas-sahibu fis-safar, wal-khalifatu fil-ahl.",
+        meaning: "O Allah, You are the Companion on the journey and the Guardian of the family. O Allah, I seek refuge in You from the hardship of travel, from returning to a sad state of affairs, and from the sight of misfortune in property and family.",
+        source: "Muslim"
+      },
+      {
+        arabic: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ",
+        translit: "Allahumma inni a'udhu bika min wa'tha'is-safar, wa ka'abatil-manzar, wa su'il-munqalabi fil-mali wal-ahl.",
+        meaning: "O Allah, I seek refuge in You from the hardship of travel, from having a depressing sight, and from finding my family and property in a miserable state upon return.",
+        source: "Bukhari & Muslim"
+      },
+      {
+        arabic: "سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ",
+        translit: "Subhanal-ladhi sakhkhara lana hadha wa ma kunna lahu muqrinin.",
+        meaning: "How perfect He is, the One Who has placed this at our service, and we ourselves would not have been capable of that.",
+        source: "Quran 43:13"
+      },
+      {
+        arabic: "اللَّهُمَّ بَلِّغْنَا بَلَاغًا صَالِحًا يَبْلُغُ خَيْرًا وَيَصْرِفُ شَرًّا",
+        translit: "Allahumma balighna balaghan salihal yablughu khayran wa yasrifu sharran.",
+        meaning: "O Allah, enable us to reach our destination safely, with good coming to us and evil being averted from us.",
+        source: "Traditional"
+      }
+    ]
+  },
+  protection: {
+    name: "Protection",
+    duas: [
+      {
+        arabic: "أَعُوذُ بِاللَّهِ السَّمِيعِ الْعَلِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+        translit: "A'udhu billahis-sami'il-'alimi minash-shaytanir-rajim.",
+        meaning: "I seek refuge with Allah, the All-Hearing, All-Knowing from the accursed devil.",
+        source: "Abu Dawud"
+      },
+      {
+        arabic: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ",
+        translit: "Allahumma inni a'udhu bika minal-hammi wal-hazan, wa a'udhu bika minal-'ajzi wal-kasal, wa a'udhu bika minal-jubni wal-bukhl, wa a'udhu bika min ghalabatid-dayni wa qahrir-rijal.",
+        meaning: "O Allah, I seek Your refuge from worry and grief, from weakness and laziness, from cowardice and miserliness, and from being overcome by debt and overpowered by people.",
+        source: "Bukhari"
+      },
+      {
+        arabic: "حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ",
+        translit: "Hasbiyallahu la ilaha illa huw, 'alayhi tawakkaltu wa huwa rabbul-'arshil-'azim.",
+        meaning: "Allah is sufficient for me. There is no god but He. In Him I place my trust, and He is the Lord of the Magnificent Throne. Whoever recites this seven times morning and evening, Allah will spare him whatever worries him.",
+        source: "Abu Dawud"
+      },
+      {
+        arabic: "اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي",
+        translit: "Allahumma ihfazni min bayni yadayya, wa min khalfi, wa 'an yamini, wa 'an shimali, wa min fawqi, wa a'udhu bi'azamatika an ughtala min tahti.",
+        meaning: "O Allah, guard me from my front, my back, my right, my left, and from above me. I seek refuge in Your Greatness from being struck down from beneath me.",
+        source: "Ibn Majah"
+      },
+      {
+        arabic: "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ",
+        translit: "Bismillahil-ladhi la yadurru ma'asmihi shay'un fil-ardi wa la fis-sama'.",
+        meaning: "In the name of Allah, with whose name nothing can cause harm on earth or in the heavens. Recited three times in the morning and evening — no harm can befall the one who says it.",
+        source: "Tirmidhi"
+      },
+      {
+        arabic: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ الَّتِي لَا يُجَاوِزُهُنَّ بَرٌّ وَلَا فَاجِرٌ مِنْ شَرِّ مَا خَلَقَ وَبَرَأَ وَذَرَأَ",
+        translit: "A'udhu bikalimatillahit-tammati, allati la yujawizuhunna barrun wa la fajirun, min sharri ma khalaqa wa bara'a wa dhara'a.",
+        meaning: "I seek refuge in the perfect words of Allah — which no righteous or unrighteous person can transgress — from the evil of what He created, made, and originated.",
+        source: "Ahmad"
+      },
+      {
+        arabic: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",
+        translit: "Allahumma inni as'alukal-'afwa wal-'afiyata fid-dunya wal-akhirah.",
+        meaning: "O Allah, I ask You for pardon and well-being in this life and in the Hereafter.",
+        source: "Ibn Majah"
+      }
+    ]
+  },
+  patience: {
+    name: "Patience",
+    duas: [
+      {
+        arabic: "رَبَّنَا أَفْرِغْ عَلَيْنَا صَبْرًا وَثَبِّتْ أَقْدَامَنَا وَانصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ",
+        translit: "Rabbana afrigh 'alayna sabran wa thabbit aqdamana wansurna 'alal-qawmil-kafirin.",
+        meaning: "Our Lord, pour upon us patience and plant firmly our feet and give us victory over the disbelieving people.",
+        source: "Quran 2:250"
+      },
+      {
+        arabic: "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي وَأَخْلِفْ لِي خَيْرًا مِنْهَا",
+        translit: "Inna lillahi wa inna ilayhi raji'un. Allahumma' jurni fi musibati wa akhlif li khayran minha.",
+        meaning: "Indeed we belong to Allah, and indeed to Him we shall return. O Allah, reward me for my affliction and replace it for me with something better.",
+        source: "Muslim"
+      },
+      {
+        arabic: "اللَّهُمَّ رَبَّ النَّاسِ، أَذْهِبِ الْبَأْسَ، وَاشْفِ أَنْتَ الشَّافِي، لَا شِفَاءَ إِلَّا شِفَاؤُكَ، شِفَاءً لَا يُغَادِرُ سَقَمًا",
+        translit: "Allahumma rabban-nas, adhibil-ba's, washfi antash-shafi, la shifa'a illa shifa'uka, shifa'an la yughadiru saqama.",
+        meaning: "O Allah, Lord of mankind, remove the hardship and grant healing. You are the Healer. There is no healing except Your healing — a healing that leaves no sickness behind.",
+        source: "Bukhari & Muslim"
+      },
+      {
+        arabic: "لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+        translit: "La ilaha illa anta subhanaka inni kuntu minaz-zalimin.",
+        meaning: "There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers. The dua of Prophet Yunus (AS) from the belly of the whale — when recited with sincerity, Allah relieves distress.",
+        source: "Quran 21:87"
+      },
+      {
+        arabic: "حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ",
+        translit: "Hasbunallahu wa ni'mal-wakil.",
+        meaning: "Allah is sufficient for us, and He is the best disposer of affairs. The words spoken by Ibrahim (AS) when thrown into the fire, and by Muhammad ﷺ when told the enemy had gathered against him.",
+        source: "Quran 3:173"
+      },
+      {
+        arabic: "رَبِّ إِنِّي مَسَّنِيَ الضُّرُّ وَأَنتَ أَرْحَمُ الرَّاحِمِينَ",
+        translit: "Rabbi inni massaniyad-durru wa anta arhamur-rahimin.",
+        meaning: "My Lord, indeed adversity has touched me, and You are the Most Merciful of the merciful. The prayer of Prophet Ayyub (AS) — Allah answered and removed his suffering.",
+        source: "Quran 21:83"
+      }
+    ]
+  }
+};
+
+let drCurrentCat = null;
+let drCurrentIdx = 0;
+let drTotalDuas = 0;
+let drDragging = false;
+let drDragStartX = 0;
+let drDragDeltaX = 0;
+let drRaf = null;
+
+function openDuaReader(catKey) {
+  const cat = DUA_CATS[catKey];
+  if (!cat) return;
+  drCurrentCat = catKey;
+  drCurrentIdx = 0;
+  drTotalDuas = cat.duas.length;
+
+  // Set header
+  document.getElementById('dr-cat-name').textContent = cat.name;
+
+  // Build dots
+  const dotsEl = document.getElementById('dr-dots');
+  dotsEl.innerHTML = cat.duas.map((_, i) =>
+    `<div class="dr-dot${i === 0 ? ' active' : ''}"></div>`
+  ).join('');
+
+  // Build all cards in the track (RTL order — first dua on right, last on left like Arabic book)
+  const track = document.getElementById('dr-track');
+  track.innerHTML = cat.duas.map((d, i) => `
+    <div class="dr-card" data-idx="${i}">
+      <div class="dr-arabic">${d.arabic}</div>
+      <div class="dr-divider">
+        <div class="dr-div-line"></div>
+        <div class="dr-div-diamond"></div>
+        <div class="dr-div-line"></div>
+      </div>
+      ${d.translit ? `<div class="dr-translit">${d.translit}</div>` : ''}
+      <div class="dr-meaning-label">Meaning</div>
+      <div class="dr-meaning">${d.meaning}</div>
+      <div class="dr-source">${d.source}</div>
+    </div>
+  `).join('');
+
+  // Position track at first card
+  track.classList.add('no-transition');
+  track.style.transform = 'translateX(0)';
+
+  // Show reader
+  const reader = document.getElementById('dua-reader');
+  reader.style.display = 'flex';
+  reader.style.transform = 'translateY(100%)';
+  requestAnimationFrame(() => {
+    anime({ targets: reader, translateY: ['100%', '0%'], duration: 460, easing: 'spring(1,80,12,0)' });
+  });
+
+  drUpdateUI();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDuaReader() {
+  const reader = document.getElementById('dua-reader');
+  anime({
+    targets: reader, translateY: '100%', duration: 380, easing: 'easeInCubic',
+    complete: () => { reader.style.display = 'none'; reader.style.transform = ''; document.body.style.overflow = ''; }
+  });
+}
+
+function drGoTo(idx, animate = true) {
+  const track = document.getElementById('dr-track');
+  const vw = document.getElementById('dr-viewport').offsetWidth;
+  drCurrentIdx = Math.max(0, Math.min(drTotalDuas - 1, idx));
+  if (animate) {
+    track.classList.remove('no-transition');
+  } else {
+    track.classList.add('no-transition');
+  }
+  track.style.transform = `translateX(${-drCurrentIdx * vw}px)`;
+  drUpdateUI();
+}
+
+function drUpdateUI() {
+  const total = drTotalDuas;
+  const idx = drCurrentIdx;
+  document.getElementById('dr-counter').textContent = (idx + 1) + ' / ' + total;
+  document.querySelectorAll('.dr-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+  document.getElementById('dr-prev').classList.toggle('hidden', idx === 0);
+  document.getElementById('dr-next').classList.toggle('hidden', idx === total - 1);
+  // Animate in the active card content
+  const cards = document.querySelectorAll('.dr-card');
+  const card = cards[idx];
+  if (card) {
+    const els = card.querySelectorAll('.dr-arabic, .dr-divider, .dr-translit, .dr-meaning-label, .dr-meaning, .dr-source');
+    anime.set(els, { opacity: 0, translateY: 10 });
+    anime({ targets: els, opacity: 1, translateY: 0, delay: anime.stagger(45, { start: 80 }), duration: 320, easing: 'easeOutCubic' });
+  }
+}
+
+document.getElementById('dr-back').addEventListener('click', closeDuaReader);
+document.getElementById('dr-prev').addEventListener('click', () => drGoTo(drCurrentIdx - 1));
+document.getElementById('dr-next').addEventListener('click', () => drGoTo(drCurrentIdx + 1));
+
+// Touch swipe — RTL (swipe right = prev, swipe left = next, like Arabic book)
+(function initDuaSwipe() {
+  const vp = document.getElementById('dr-viewport');
+
+  vp.addEventListener('touchstart', e => {
+    drDragStartX = e.touches[0].clientX;
+    drDragDeltaX = 0;
+    drDragging = false;
+    document.getElementById('dr-track').classList.add('no-transition');
+  }, { passive: true });
+
+  vp.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - drDragStartX;
+    const dy = Math.abs(e.touches[0].clientY - (e.touches[0].clientY)); // placeholder
+    if (!drDragging && Math.abs(dx) > 8) drDragging = true;
+    if (!drDragging) return;
+    drDragDeltaX = dx;
+    if (!drRaf) {
+      drRaf = requestAnimationFrame(() => {
+        drRaf = null;
+        const vw = vp.offsetWidth;
+        const base = -drCurrentIdx * vw;
+        const clamped = drDragDeltaX * 0.78; // rubber-band resistance
+        document.getElementById('dr-track').style.transform = `translateX(${base + clamped}px)`;
+      });
+    }
+  }, { passive: true });
+
+  vp.addEventListener('touchend', () => {
+    if (drRaf) { cancelAnimationFrame(drRaf); drRaf = null; }
+    if (!drDragging) return;
+    drDragging = false;
+    const threshold = vp.offsetWidth * 0.25;
+    if (drDragDeltaX < -threshold && drCurrentIdx < drTotalDuas - 1) {
+      drGoTo(drCurrentIdx + 1);
+    } else if (drDragDeltaX > threshold && drCurrentIdx > 0) {
+      drGoTo(drCurrentIdx - 1);
+    } else {
+      drGoTo(drCurrentIdx); // snap back
+    }
+    drDragDeltaX = 0;
+  }, { passive: true });
+
+  // Swipe down to close (from top of card)
+  let swipeStartY = 0, swipeDownDragging = false, swipeDownY = 0;
+  const reader = document.getElementById('dua-reader');
+  reader.addEventListener('touchstart', e => {
+    swipeStartY = e.touches[0].clientY; swipeDownY = 0; swipeDownDragging = false;
+  }, { passive: true });
+  reader.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - swipeStartY;
+    if (!swipeDownDragging && dy > 14 && Math.abs(e.touches[0].clientX - drDragStartX) < 14) swipeDownDragging = true;
+    if (!swipeDownDragging) return;
+    swipeDownY = Math.max(0, dy);
+    reader.style.transform = `translateY(${swipeDownY * 0.68}px)`;
+  }, { passive: true });
+  reader.addEventListener('touchend', () => {
+    if (!swipeDownDragging) return;
+    swipeDownDragging = false;
+    if (swipeDownY > window.innerHeight * 0.28) {
+      closeDuaReader();
+    } else {
+      reader.style.transition = 'transform 0.34s cubic-bezier(0.34,1.36,0.64,1)';
+      reader.style.transform = 'translateY(0)';
+      reader.addEventListener('transitionend', () => { reader.style.transition = ''; }, { once: true });
+    }
+    swipeDownY = 0;
+  }, { passive: true });
 })();
 
 // ── Init ──
