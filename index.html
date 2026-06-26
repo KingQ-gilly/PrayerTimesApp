@@ -1236,42 +1236,56 @@ function closeDetail(){
 // ── Swipe-down to dismiss detail screen ──
 (function initDetailSwipe(){
   const detail = document.getElementById("detail-screen");
-  let startY=0, lastY=0, dragging=false;
-  const THRESHOLD = 0.28; // 28% of screen = dismiss
+  let startY = 0, dragY = 0, dragging = false, raf = null;
 
-  detail.addEventListener("touchstart", e=>{
-    startY = e.touches[0].clientY;
-    lastY  = startY;
+  detail.addEventListener("touchstart", e => {
+    startY  = e.touches[0].clientY;
+    dragY   = 0;
     dragging = false;
-  },{ passive:true });
+  }, { passive: true });
 
-  detail.addEventListener("touchmove", e=>{
-    lastY = e.touches[0].clientY;
-    const dy = lastY - startY;
-    if(detail.scrollTop <= 0 && dy > 0){
-      dragging = true;
-      // slight rubber-band resistance
-      const drag = dy * 0.72;
-      detail.style.transition = "none";
-      detail.style.transform  = "translateY("+drag+"px)";
-    } else if(dragging && dy <= 2){
-      dragging = false;
-      anime({ targets: detail, translateY:0, duration:280, easing:"spring(1,90,15,0)" });
-      detail.style.transition="";
+  detail.addEventListener("touchmove", e => {
+    const dy = e.touches[0].clientY - startY;
+
+    // Only enter drag mode when at top of scroll AND clearly pulling down
+    if (!dragging) {
+      if (detail.scrollTop <= 0 && dy > 10) {
+        dragging = true;
+      } else {
+        return; // let normal scroll happen
+      }
     }
-  },{ passive:true });
 
-  detail.addEventListener("touchend", ()=>{
-    if(!dragging){ detail.style.transition=""; return; }
-    const dy = lastY - startY;
-    detail.style.transition = "";
-    if(dy > window.innerHeight * THRESHOLD){
+    // Block scroll while dragging — requires passive:false
+    e.preventDefault();
+    dragY = dy;
+
+    // Batch DOM write in rAF for smooth 60fps
+    if (!raf) {
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        detail.style.transform = "translateY(" + (dragY * 0.75) + "px)";
+      });
+    }
+  }, { passive: false });
+
+  detail.addEventListener("touchend", () => {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+    if (!dragging) return;
+    dragging = false;
+
+    if (dragY > window.innerHeight * 0.28) {
       closeDetail();
     } else {
-      anime({ targets: detail, translateY:0, duration:340, easing:"spring(1,85,14,0)" });
+      // Snap back with CSS spring — no JS animation loop needed
+      detail.style.transition = "transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1)";
+      detail.style.transform  = "translateY(0)";
+      detail.addEventListener("transitionend", () => {
+        detail.style.transition = "";
+      }, { once: true });
     }
-    dragging = false;
-  },{ passive:true });
+    dragY = 0;
+  }, { passive: true });
 })();
 
 vibeCheck();
