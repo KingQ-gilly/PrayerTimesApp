@@ -99,12 +99,13 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Global prayer color tint ── */
+    /* ── Global prayer background — entire UI color-shifts to match current prayer ── */
     #bg-tint {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 0;
-      background: #000000;
-      opacity: 0.07;
+      background-color: #08080c;
+      opacity: 1;
+      transition: background-color 1.6s ease;
     }
 
     /* ── Heartbeat overlay ── */
@@ -235,8 +236,8 @@
       transition: transform 0.18s var(--ease-out), opacity 0.3s ease;
       cursor: default;
     }
-    .row.passed   { background: var(--fill3); opacity: 0.32; }
-    .row.upcoming { background: var(--fill2); }
+    .row.passed   { background: rgba(255,255,255,0.04); opacity: 0.38; }
+    .row.upcoming { background: rgba(255,255,255,0.07); }
 
     /* active state uses prayer-specific color */
     .row.active { background: linear-gradient(135deg, var(--row-soft) 0%, rgba(0,0,0,0) 100%); }
@@ -449,18 +450,19 @@
     /* ── Full-Screen Prayer Detail ── */
     .detail-screen {
       position: fixed; inset: 0; z-index: 60;
-      background: #000;
+      background: var(--bg, #08080c);
       overflow-y: auto; -webkit-overflow-scrolling: touch;
       display: none;
       will-change: transform;
+      transition: background-color 1.6s ease;
     }
     .detail-nav {
       position: sticky; top: 0; z-index: 5;
       padding: max(env(safe-area-inset-top), 50px) 20px 14px;
       display: flex; align-items: flex-end; gap: 12px;
-      background: rgba(0,0,0,0.72);
-      -webkit-backdrop-filter: saturate(180%) blur(24px);
-      backdrop-filter: saturate(180%) blur(24px);
+      background: rgba(0,0,0,0.45);
+      -webkit-backdrop-filter: saturate(200%) blur(28px);
+      backdrop-filter: saturate(200%) blur(28px);
       border-bottom: 0.5px solid rgba(255,255,255,0.06);
     }
     .detail-back {
@@ -522,8 +524,10 @@
       display: flex; flex-direction: column; gap: 12px;
     }
     .d-card {
-      background: rgba(255,255,255,0.05);
-      border: 0.5px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.07);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border: 0.5px solid rgba(255,255,255,0.10);
       border-radius: 20px; padding: 18px 20px;
     }
     .d-card-label {
@@ -718,12 +722,15 @@ const PRAYERS=[
 ];
 const QUOTES=[{"text": "Indeed, with hardship comes ease.", "source": "Quran 94:6"}, {"text": "Allah does not burden a soul beyond that it can bear.", "source": "Quran 2:286"}, {"text": "And He is with you wherever you are.", "source": "Quran 57:4"}, {"text": "Verily, the remembrance of Allah brings comfort to the heart.", "source": "Quran 13:28"}, {"text": "So remember Me; I will remember you.", "source": "Quran 2:152"}, {"text": "Call upon Me; I will respond to you.", "source": "Quran 40:60"}, {"text": "And seek help through patience and prayer.", "source": "Quran 2:45"}, {"text": "Do not lose hope, nor be sad.", "source": "Quran 3:139"}, {"text": "Speak good or remain silent.", "source": "Bukhari & Muslim"}, {"text": "The best of people are those who benefit others.", "source": "Al-Tabarani"}, {"text": "Smile at your brother \u2014 it is an act of charity.", "source": "Tirmidhi"}, {"text": "None of you truly believes until he loves for his brother what he loves for himself.", "source": "Bukhari & Muslim"}, {"text": "The strong person is one who controls themselves in anger.", "source": "Bukhari"}, {"text": "Make things easy and do not make them difficult.", "source": "Bukhari"}, {"text": "Be in this world as if you are a stranger or a traveller.", "source": "Bukhari"}, {"text": "Take advantage of five before five: youth, health, wealth, free time, and life.", "source": "Hakim"}, {"text": "The best among you are those who have the best manners and character.", "source": "Bukhari"}, {"text": "Allah is beautiful and loves beauty.", "source": "Muslim"}, {"text": "Kindness is a mark of faith, and whoever has no kindness has no faith.", "source": "Muslim"}, {"text": "Every act of kindness is charity.", "source": "Bukhari"}, {"text": "He who does not thank people, does not thank Allah.", "source": "Ahmad"}, {"text": "Verily Allah does not look at your appearance or wealth, but rather He looks at your hearts and actions.", "source": "Muslim"}, {"text": "Whoever walks a path seeking knowledge, Allah will make easy for him a path to Paradise.", "source": "Muslim"}, {"text": "The best charity is that given when you yourself are in need.", "source": "Bukhari"}, {"text": "O Turner of hearts, keep our hearts firm on Your religion.", "source": "Tirmidhi"}, {"text": "Feed the hungry, visit the sick, and free the captive.", "source": "Bukhari"}, {"text": "The world is a prison for the believer and a paradise for the disbeliever.", "source": "Muslim"}, {"text": "Whoever believes in Allah and the Last Day, let him say something good or remain silent.", "source": "Bukhari"}];
 const THEMES={
-  fajr:   {hero:"#04091a",glow:"rgba(100,150,255,0.14)",accent:"#7eb8f7",accentSoft:"rgba(126,184,247,0.18)"},
-  dhuhr:  {hero:"#110e00",glow:"rgba(245,208,80,0.14)", accent:"#f5d060",accentSoft:"rgba(245,208,96,0.18)"},
-  asr:    {hero:"#120700",glow:"rgba(240,140,50,0.14)", accent:"#f0a050",accentSoft:"rgba(240,160,80,0.18)"},
-  maghrib:{hero:"#130208",glow:"rgba(230,80,60,0.14)",  accent:"#e8624a",accentSoft:"rgba(232,98,74,0.18)"},
-  isha:   {hero:"#080412",glow:"rgba(155,100,220,0.14)",accent:"#9b7fd4",accentSoft:"rgba(155,127,212,0.18)"},
-  default:{hero:"#050a18",glow:"rgba(196,164,97,0.10)", accent:"#c4a461",accentSoft:"rgba(196,164,97,0.18)"},
+  // bg   = deep immersive background (entire UI color-shifts here)
+  // hero = slightly richer gradient layer on top of bg
+  // accent = bright UI color for labels, icons, highlights
+  fajr:   {bg:"#00061c",hero:"#04091a",glow:"rgba(100,150,255,0.22)",accent:"#6ab4ff",accentSoft:"rgba(106,180,255,0.18)"},
+  dhuhr:  {bg:"#160b00",hero:"#1a0e00",glow:"rgba(255,185,50,0.22)", accent:"#ffb830",accentSoft:"rgba(255,184,48,0.18)"},
+  asr:    {bg:"#130900",hero:"#170c00",glow:"rgba(255,145,45,0.22)",  accent:"#ff9a38",accentSoft:"rgba(255,154,56,0.18)"},
+  maghrib:{bg:"#160003",hero:"#1a0205",glow:"rgba(255,75,60,0.22)",   accent:"#ff5a47",accentSoft:"rgba(255,90,71,0.18)"},
+  isha:   {bg:"#08031a",hero:"#0b0520",glow:"rgba(175,115,255,0.22)", accent:"#b07aff",accentSoft:"rgba(176,122,255,0.18)"},
+  default:{bg:"#08080c",hero:"#0a0a12",glow:"rgba(196,164,97,0.12)",  accent:"#c4a461",accentSoft:"rgba(196,164,97,0.18)"},
 };
 let LAT=25.3463,LNG=55.4209;
 
@@ -861,8 +868,10 @@ function applyTheme(key){
   r.setProperty("--accent",t.accent);
   r.setProperty("--accent-soft",t.accentSoft);
   r.setProperty("--accent-glow",t.glow);
-  // animate global background tint to prayer color
-  anime({ targets:"#bg-tint", backgroundColor:t.accent, duration:2400, easing:"easeOutQuad" });
+  // shift the entire background to the prayer color (CSS transition handles the animation)
+  const bgEl = document.getElementById("bg-tint");
+  bgEl.style.backgroundColor = t.bg;
+  r.setProperty("--bg", t.bg);
 }
 
 function vibeCheck(){
