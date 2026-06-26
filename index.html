@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet"/></noscript>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Prayer Times"/>
@@ -55,11 +56,10 @@
       overflow: hidden;
     }
     .app {
-      height: 100vh; height: -webkit-fill-available; height: 100dvh;
+      position: fixed; inset: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
     }
 
     /* ── Keyframes ── */
@@ -187,7 +187,7 @@
 
     /* progress */
     .prog-track { width: 100%; height: 2px; background: var(--fill2); border-radius: 1px; overflow: hidden; }
-    .prog-fill  { height: 100%; background: var(--accent); border-radius: 1px; animation: pgrow 1s 0.4s var(--ease-out) both; transition: width 1s linear; }
+    .prog-fill  { height: 100%; background: var(--accent); border-radius: 1px; width: 100%; transform: scaleX(0); transform-origin: left; transition: transform 1s linear; will-change: transform; }
     .prog-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--label4); margin-top: 5px; margin-bottom: 14px; }
 
     /* countdown pill */
@@ -235,6 +235,8 @@
       padding: 0 16px; border-radius: var(--radius-lg);
       transition: transform 0.18s var(--ease-out), opacity 0.3s ease;
       cursor: default;
+      contain: layout style paint;
+      will-change: transform;
     }
     .row.passed   { background: rgba(255,255,255,0.04); opacity: 0.38; }
     .row.upcoming { background: rgba(255,255,255,0.07); }
@@ -802,7 +804,7 @@ function render(){
     if(aIdx>=0){
       const s=T[keys[aIdx]],e=nTime;
       const pct=Math.min(100,Math.max(0,(now-s)/(e-s)*100));
-      document.getElementById("prog-fill").style.width=pct.toFixed(1)+"%";
+      document.getElementById("prog-fill").style.transform="scaleX("+(pct/100).toFixed(3)+")";
       document.getElementById("prog-l").textContent=PRAYERS[aIdx].en+" "+fmt(s);
       document.getElementById("prog-r").textContent=PRAYERS[nIdx].en+" "+fmt(e);
     }
@@ -812,7 +814,7 @@ function render(){
     nTime=calcT(tm).fajr;
     const s=T[keys[aIdx]];
     const pct=Math.min(100,Math.max(0,(now-s)/(nTime-s)*100));
-    document.getElementById("prog-fill").style.width=pct.toFixed(1)+"%";
+    document.getElementById("prog-fill").style.transform="scaleX("+(pct/100).toFixed(3)+")";
     document.getElementById("prog-l").textContent=PRAYERS[aIdx].en+" "+fmt(s);
     document.getElementById("prog-r").textContent="Fajr "+fmt(nTime);
   }
@@ -854,7 +856,7 @@ function tick(){
   if(aIdx2>=0&&nIdx>=0){
     const s2=T[keys[aIdx2]],e=T[keys[nIdx]];
     const pct=Math.min(100,Math.max(0,(now-s2)/(e-s2)*100));
-    document.getElementById("prog-fill").style.width=pct.toFixed(1)+"%";
+    document.getElementById("prog-fill").style.transform="scaleX("+(pct/100).toFixed(3)+")";
   }
   if(now.getSeconds()===0) render();
 }
@@ -1239,32 +1241,31 @@ function closeDetail(){
   let startY = 0, dragY = 0, dragging = false, raf = null;
 
   detail.addEventListener("touchstart", e => {
-    startY  = e.touches[0].clientY;
-    dragY   = 0;
+    startY   = e.touches[0].clientY;
+    dragY    = 0;
     dragging = false;
   }, { passive: true });
 
   detail.addEventListener("touchmove", e => {
     const dy = e.touches[0].clientY - startY;
 
-    // Only enter drag mode when at top of scroll AND clearly pulling down
     if (!dragging) {
-      if (detail.scrollTop <= 0 && dy > 10) {
+      if (detail.scrollTop <= 0 && dy > 12) {
         dragging = true;
+        // Lock scrolling on the detail element so only transform moves
+        detail.style.overflowY = "hidden";
       } else {
-        return; // let normal scroll happen
+        return;
       }
     }
 
-    // Block scroll while dragging — requires passive:false
     e.preventDefault();
-    dragY = dy;
+    dragY = Math.max(0, dy); // only downward
 
-    // Batch DOM write in rAF for smooth 60fps
     if (!raf) {
       raf = requestAnimationFrame(() => {
         raf = null;
-        detail.style.transform = "translateY(" + (dragY * 0.75) + "px)";
+        detail.style.transform = "translateY(" + (dragY * 0.72) + "px)";
       });
     }
   }, { passive: false });
@@ -1273,15 +1274,16 @@ function closeDetail(){
     if (raf) { cancelAnimationFrame(raf); raf = null; }
     if (!dragging) return;
     dragging = false;
+    detail.style.overflowY = ""; // restore scroll
 
-    if (dragY > window.innerHeight * 0.28) {
+    if (dragY > window.innerHeight * 0.26) {
       closeDetail();
     } else {
-      // Snap back with CSS spring — no JS animation loop needed
-      detail.style.transition = "transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1)";
-      detail.style.transform  = "translateY(0)";
+      detail.style.transition = "transform 0.36s cubic-bezier(0.34, 1.36, 0.64, 1)";
+      detail.style.transform  = "translateY(0px)";
       detail.addEventListener("transitionend", () => {
         detail.style.transition = "";
+        detail.style.transform  = "";
       }, { once: true });
     }
     dragY = 0;
