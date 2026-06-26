@@ -41,8 +41,12 @@
 
     /* ── Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%;
+    html {
+      height: 100%; height: -webkit-fill-available;
+      background: var(--bg);
+    }
+    body {
+      min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;
       background: var(--bg);
       color: var(--label1);
       font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
@@ -51,7 +55,7 @@
       overflow: hidden;
     }
     .app {
-      height: 100dvh;
+      height: 100vh; height: -webkit-fill-available; height: 100dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -300,13 +304,21 @@
     /* ── Tab bar — iOS frosted glass ── */
     .tabs {
       display: flex;
-      background: rgba(18,18,20,0.82);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-top: 0.5px solid rgba(255,255,255,0.12);
-      padding: 8px 0 max(env(safe-area-inset-bottom), 16px);
+      background: rgba(10,10,12,0.92);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+      backdrop-filter: saturate(180%) blur(24px);
+      border-top: 0.5px solid rgba(255,255,255,0.10);
+      padding: 10px 0 max(env(safe-area-inset-bottom), 20px);
       flex-shrink: 0;
       position: relative; z-index: 10;
+    }
+    /* fill the gap between tab bar and very bottom edge */
+    .tabs::after {
+      content: "";
+      position: absolute; left: 0; right: 0; top: 100%;
+      height: env(safe-area-inset-bottom, 0px);
+      background: rgba(10,10,12,0.92);
+      pointer-events: none;
     }
     .tab {
       flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -946,21 +958,88 @@ function renderQ(){
 document.getElementById("q-new").addEventListener("click",()=>{qi=(qi+1)%QUOTES.length;renderQ();});
 renderQ();
 
-// schedule quote notifications alongside prayer notifications
-function scheduleN(T){
-  if(!("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.ready.then(reg=>{
-    const prayerData=PRAYERS.map(p=>({name:p.en,arabic:p.ar,time:T[p.key].getTime()}));
-    // pick a random quote for today
-    const todayQ=QUOTES[Math.floor(new Date().getDate()*9.3)%QUOTES.length];
-    // send fajr time as quote notification trigger
-    const quoteTime=T.fajr.getTime();
-    reg.active&&reg.active.postMessage({
-      type:"SCHEDULE_PRAYERS",
-      prayers:prayerData,
-      quote:{text:todayQ.text,source:todayQ.source,time:quoteTime}
+// ── Push Server config — fill in after deploying Cloudflare Worker ──
+const PUSH_SERVER = 'https://prayer-push.YOUR_SUBDOMAIN.workers.dev'; // replace after deploy
+const VAPID_PUBLIC_KEY = 'REPLACE_WITH_YOUR_VAPID_PUBLIC_KEY';        // from: node gen-keys.js
+
+function urlBase64ToUint8Array(b64u) {
+  const pad = '='.repeat((4 - b64u.length % 4) % 4);
+  const b64 = (b64u + pad).replace(/-/g, '+').replace(/_/g, '/');
+  return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+}
+
+// Build next 7 days of prayer times to send to the server
+function buildPrayerPayload() {
+  const prayers = [];
+  const now = new Date();
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d);
+    const T = calcT(date);
+    PRAYERS.forEach(p => {
+      prayers.push({ name: p.en, arabic: p.ar, time: T[p.key].getTime() });
     });
-  });
+  }
+  return prayers;
+}
+
+async function subscribePush() {
+  if (!('PushManager' in window)) { toast('Push not supported on this browser'); return; }
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    try {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    } catch(e) {
+      toast('Push subscription failed'); console.error(e); return;
+    }
+  }
+  // Send subscription + 7 days of prayer times to the server
+  try {
+    const res = await fetch(PUSH_SERVER + '/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: sub.toJSON(), prayers: buildPrayerPayload() }),
+    });
+    if (!res.ok) throw new Error('Server ' + res.status);
+    toast('Notifications active! 🕌');
+    localStorage.setItem('notif', '1');
+    document.getElementById('notif-btn').classList.add('on');
+  } catch(e) {
+    toast('Server error — check push server'); console.error(e);
+  }
+}
+
+async function unsubscribePush() {
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) {
+    fetch(PUSH_SERVER + '/unsubscribe', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ endpoint: sub.endpoint }),
+    }).catch(() => {});
+    await sub.unsubscribe();
+  }
+  localStorage.removeItem('notif');
+  document.getElementById('notif-btn').classList.remove('on');
+  toast('Notifications off');
+}
+
+// Refresh server with updated prayer times each day when app opens
+async function refreshPushPrayers() {
+  if (localStorage.getItem('notif') !== '1') return;
+  if (Notification.permission !== 'granted') return;
+  const reg = await navigator.serviceWorker.ready;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub) return;
+  fetch(PUSH_SERVER + '/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscription: sub.toJSON(), prayers: buildPrayerPayload() }),
+  }).catch(() => {});
 }
 
 // notifications
@@ -968,14 +1047,17 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
 
 async function reqNotif(){
   if(!("Notification" in window)){toast("Notifications not supported");return;}
+  // Toggle off if already on
+  if(localStorage.getItem("notif")==="1"){
+    await unsubscribePush();
+    return;
+  }
   const p=await Notification.requestPermission();
   if(p==="granted"){
-    document.getElementById("notif-btn").classList.add("on");
-    toast("Notifications enabled!");
-    const today=new Date(); today.setHours(0,0,0,0);
-    scheduleN(calcT(today));
-    localStorage.setItem("notif","1");
-  } else toast("Allow notifications in Settings");
+    await subscribePush();
+  } else {
+    toast("Allow notifications in Settings");
+  }
 }
 document.getElementById("notif-btn").addEventListener("click",reqNotif);
 
@@ -1142,6 +1224,47 @@ function closeDetail(){
   });
 }
 
+// ── Swipe-down to dismiss detail screen ──
+(function initDetailSwipe(){
+  const detail = document.getElementById("detail-screen");
+  let startY=0, lastY=0, dragging=false;
+  const THRESHOLD = 0.28; // 28% of screen = dismiss
+
+  detail.addEventListener("touchstart", e=>{
+    startY = e.touches[0].clientY;
+    lastY  = startY;
+    dragging = false;
+  },{ passive:true });
+
+  detail.addEventListener("touchmove", e=>{
+    lastY = e.touches[0].clientY;
+    const dy = lastY - startY;
+    if(detail.scrollTop <= 0 && dy > 0){
+      dragging = true;
+      // slight rubber-band resistance
+      const drag = dy * 0.72;
+      detail.style.transition = "none";
+      detail.style.transform  = "translateY("+drag+"px)";
+    } else if(dragging && dy <= 2){
+      dragging = false;
+      anime({ targets: detail, translateY:0, duration:280, easing:"spring(1,90,15,0)" });
+      detail.style.transition="";
+    }
+  },{ passive:true });
+
+  detail.addEventListener("touchend", ()=>{
+    if(!dragging){ detail.style.transition=""; return; }
+    const dy = lastY - startY;
+    detail.style.transition = "";
+    if(dy > window.innerHeight * THRESHOLD){
+      closeDetail();
+    } else {
+      anime({ targets: detail, translateY:0, duration:340, easing:"spring(1,85,14,0)" });
+    }
+    dragging = false;
+  },{ passive:true });
+})();
+
 vibeCheck();
 setInterval(vibeCheck,30000);
 render();
@@ -1155,8 +1278,8 @@ if("serviceWorker" in navigator){
     .then(reg=>{
       if(localStorage.getItem("notif")==="1"&&Notification.permission==="granted"){
         document.getElementById("notif-btn").classList.add("on");
-        const today=new Date(); today.setHours(0,0,0,0);
-        setTimeout(()=>scheduleN(calcT(today)),1000);
+        // Refresh server with today's prayer times (does nothing if server not deployed yet)
+        refreshPushPrayers();
       }
     });
 }
