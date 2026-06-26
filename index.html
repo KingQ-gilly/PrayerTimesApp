@@ -133,32 +133,29 @@
     /* ── Hero ── */
     .hero {
       flex-shrink: 0;
-      padding: max(env(safe-area-inset-top), 56px) 20px 20px;
+      padding: max(env(safe-area-inset-top), 56px) 24px 20px;
       position: relative; text-align: center; overflow: hidden;
-      background: linear-gradient(180deg, var(--bg-hero, #050a18) 0%, var(--bg) 100%);
-      transition: background 2.4s var(--ease-in-out);
     }
     .hero::before {
       content: "";
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, var(--hero-glow, rgba(196,164,97,0.10)) 0%, transparent 65%);
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--hero-glow, transparent) 0%, transparent 100%);
       pointer-events: none;
-      transition: background 2.4s var(--ease-in-out);
     }
     .notif-btn {
       position: absolute;
       top: max(env(safe-area-inset-top), 16px); right: 16px;
-      width: 34px; height: 34px; border-radius: 50%;
-      background: var(--fill1);
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
       border: none; outline: none;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px; cursor: pointer;
-      transition: transform 0.15s var(--ease-out), background 0.2s;
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
+      color: var(--label2); cursor: pointer;
+      transition: transform 0.15s var(--ease-out), background 0.2s, color 0.2s;
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
     }
     .notif-btn:active { transform: scale(0.88); }
-    .notif-btn.on { background: var(--accent-soft); }
+    .notif-btn.on { background: var(--accent-soft); color: var(--accent); }
 
     /* hero meta row */
     .hero-meta {
@@ -171,12 +168,11 @@
     .hero-city    { font-size: 13px; font-weight: 500; color: var(--label3); }
     .hero-hijri   { font-size: 12px; color: var(--label4); margin-bottom: 18px; animation: fadeIn 0.4s 0.04s ease both; }
 
-    .hero-label   { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); opacity: 0.85; animation: fadeUp 0.4s 0.08s var(--ease-out) both; }
+    .hero-label   { font-size: 12px; font-weight: 400; letter-spacing: 0.01em; text-transform: none; color: var(--label3); animation: fadeUp 0.4s 0.08s var(--ease-out) both; }
     .hero-name    {
-      font-size: 56px; font-weight: 700; letter-spacing: -1.5px; line-height: 1;
+      font-size: 54px; font-weight: 700; letter-spacing: -1.5px; line-height: 1;
       color: var(--label1);
       animation: fadeUp 0.5s 0.10s var(--ease-out) both;
-      font-variant-numeric: tabular-nums;
     }
     .hero-time    {
       font-size: 72px; font-weight: 200; letter-spacing: -3px; line-height: 1.05;
@@ -230,79 +226,58 @@
     }
 
     .row {
-      flex: 1; min-height: 68px; max-height: 100px;
+      flex: 1; min-height: 72px; max-height: 96px;
       display: flex; align-items: center;
-      padding: 0 16px; border-radius: var(--radius-lg);
+      padding: 0 18px 0 20px; border-radius: var(--radius-lg);
       transition: transform 0.18s var(--ease-out), opacity 0.3s ease;
       cursor: default;
       contain: layout style paint;
       will-change: transform;
+      position: relative;
+      overflow: hidden;
     }
-    .row.passed   { background: rgba(255,255,255,0.04); opacity: 0.38; }
-    .row.upcoming { background: rgba(255,255,255,0.07); }
-
-    /* active state uses prayer-specific color */
-    .row.active { background: linear-gradient(135deg, var(--row-soft) 0%, rgba(0,0,0,0) 100%); }
-    .row[data-p="fajr"].active    { --row-soft:var(--fajr-soft);    box-shadow:0 0 0 1px var(--fajr-glow),   0 4px 24px var(--fajr-soft);    animation:pulseGlowP 2.8s ease-in-out infinite; }
-    .row[data-p="dhuhr"].active   { --row-soft:var(--dhuhr-soft);   box-shadow:0 0 0 1px var(--dhuhr-glow),  0 4px 24px var(--dhuhr-soft);   animation:pulseGlowP 2.8s ease-in-out infinite; }
-    .row[data-p="asr"].active     { --row-soft:var(--asr-soft);     box-shadow:0 0 0 1px var(--asr-glow),    0 4px 24px var(--asr-soft);     animation:pulseGlowP 2.8s ease-in-out infinite; }
-    .row[data-p="maghrib"].active { --row-soft:var(--maghrib-soft); box-shadow:0 0 0 1px var(--maghrib-glow),0 4px 24px var(--maghrib-soft); animation:pulseGlowP 2.8s ease-in-out infinite; }
-    .row[data-p="isha"].active    { --row-soft:var(--isha-soft);    box-shadow:0 0 0 1px var(--isha-glow),   0 4px 24px var(--isha-soft);    animation:pulseGlowP 2.8s ease-in-out infinite; }
-
-    @keyframes pulseGlowP {
-      0%,100% { opacity:1; }
-      50%      { opacity:0.85; }
+    /* left accent stripe on active row */
+    .row.active::before {
+      content: "";
+      position: absolute; left: 0; top: 20%; bottom: 20%;
+      width: 3px; border-radius: 0 2px 2px 0;
+      background: var(--accent);
     }
+    .row.passed   { opacity: 0.32; }
+    .row.upcoming { background: rgba(255,255,255,0.055); }
+    .row.active   { background: rgba(255,255,255,0.08); }
 
     .row.in { animation: rowIn 0.38s var(--ease-out) both; }
-    .row.upcoming:active, .row.active:active { transform: scale(0.975); }
+    .row:active { transform: scale(0.977); }
 
-    .row-icon {
-      width: 44px; height: 44px; border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; margin-right: 14px; flex-shrink: 0;
-      transition: background 0.3s ease;
+    /* active dot indicator */
+    .row-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      flex-shrink: 0; margin-right: 14px;
+      opacity: 0; transition: opacity 0.3s;
     }
-    .row.passed .row-icon   { background: var(--fill2); }
-    .row.upcoming .row-icon { background: var(--fill2); }
-
-    /* icon backgrounds per prayer */
-    .row[data-p="fajr"].active    .row-icon { background: var(--fajr-soft); }
-    .row[data-p="dhuhr"].active   .row-icon { background: var(--dhuhr-soft); }
-    .row[data-p="asr"].active     .row-icon { background: var(--asr-soft); }
-    .row[data-p="maghrib"].active .row-icon { background: var(--maghrib-soft); }
-    .row[data-p="isha"].active    .row-icon { background: var(--isha-soft); }
-
-    /* upcoming rows get a subtle tint on their icon */
-    .row[data-p="fajr"].upcoming    .row-icon { background: rgba(126,184,247,0.07); }
-    .row[data-p="dhuhr"].upcoming   .row-icon { background: rgba(245,208,96,0.07); }
-    .row[data-p="asr"].upcoming     .row-icon { background: rgba(240,160,80,0.07); }
-    .row[data-p="maghrib"].upcoming .row-icon { background: rgba(232,98,74,0.07); }
-    .row[data-p="isha"].upcoming    .row-icon { background: rgba(155,127,212,0.07); }
+    .row.active .row-dot { opacity: 1; background: var(--accent); }
 
     .row-info { flex: 1; min-width: 0; }
-    .row-name { font-size: 17px; font-weight: 600; color: var(--label1); letter-spacing: -0.2px; line-height: 1.2; }
-    .row-ar   { font-size: 12px; color: var(--label4); margin-top: 2px; }
-
-    /* active name color per prayer */
-    .row[data-p="fajr"].active    .row-name { color: var(--fajr); }
-    .row[data-p="dhuhr"].active   .row-name { color: var(--dhuhr); }
-    .row[data-p="asr"].active     .row-name { color: var(--asr); }
-    .row[data-p="maghrib"].active .row-name { color: var(--maghrib); }
-    .row[data-p="isha"].active    .row-name { color: var(--isha); }
+    .row-name {
+      font-size: 17px; font-weight: 600; color: var(--label1);
+      letter-spacing: -0.3px; line-height: 1.2;
+      transition: color 0.4s;
+    }
+    .row.active .row-name { color: var(--accent); }
+    .row-ar   { font-size: 13px; font-weight: 300; color: var(--label4); margin-top: 2px; letter-spacing: 0.01em; }
 
     .row-right { text-align: right; flex-shrink: 0; }
-    .row-time  { font-size: 17px; font-weight: 600; color: var(--label1); font-variant-numeric: tabular-nums; letter-spacing: -0.3px; }
-    .row-badge {
-      display: inline-block; margin-top: 4px;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      color: #000; border-radius: 6px; padding: 2px 8px;
+    .row-time  {
+      font-size: 17px; font-weight: 500; color: var(--label2);
+      font-variant-numeric: tabular-nums; letter-spacing: -0.3px;
     }
-    .row[data-p="fajr"]    .row-badge { background: var(--fajr); }
-    .row[data-p="dhuhr"]   .row-badge { background: var(--dhuhr); }
-    .row[data-p="asr"]     .row-badge { background: var(--asr); }
-    .row[data-p="maghrib"] .row-badge { background: var(--maghrib); color: #fff; }
-    .row[data-p="isha"]    .row-badge { background: var(--isha); color: #fff; }
+    .row.active .row-time { color: var(--label1); font-weight: 600; }
+    .row-chevron {
+      font-size: 13px; color: var(--label4); margin-top: 3px;
+      transition: color 0.3s; font-weight: 300;
+    }
+    .row.active .row-chevron { color: var(--accent); opacity: 0.7; }
 
     /* ── Tab bar — iOS frosted glass ── */
     .tabs {
@@ -329,10 +304,10 @@
       transition: opacity 0.15s ease;
     }
     .tab:active { opacity: 0.6; }
-    .tab-icon  { font-size: 22px; line-height: 1; transition: transform 0.2s var(--spring); }
+    .tab-icon  { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: var(--label3); transition: transform 0.2s var(--spring), color 0.15s; }
+    .tab.active .tab-icon { color: var(--accent); }
     .tab-label { font-size: 10px; font-weight: 500; letter-spacing: 0.02em; color: var(--label3); transition: color 0.15s; }
     .tab.active .tab-label { color: var(--accent); }
-    .tab.active .tab-icon  { transform: scale(1.08); }
 
     /* ── Qibla ── */
     .qibla-wrap {
@@ -485,7 +460,7 @@
     }
 
     .detail-hero-section {
-      padding: 40px 28px 36px;
+      padding: 56px 28px 40px;
       text-align: center; position: relative; overflow: hidden;
     }
     .detail-hero-section::before {
@@ -504,8 +479,8 @@
       box-shadow: 0 0 0 1px var(--detail-color, transparent), 0 8px 32px var(--detail-soft, transparent);
     }
     .detail-en {
-      font-size: 52px; font-weight: 700; letter-spacing: -1.5px; line-height: 1;
-      color: var(--detail-color, var(--label1)); margin-bottom: 6px;
+      font-size: 60px; font-weight: 700; letter-spacing: -2px; line-height: 1;
+      color: var(--label1); margin-bottom: 8px;
     }
     .detail-ar {
       font-size: 20px; font-weight: 300; color: rgba(255,255,255,0.35);
@@ -588,7 +563,11 @@
     <!-- Prayers -->
     <div class="page active" id="page-prayers">
       <div class="hero" id="hero">
-        <button class="notif-btn" id="notif-btn">🔔</button>
+        <button class="notif-btn" id="notif-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
         <div class="toast" id="toast"></div>
         <div class="hero-meta">
           <span class="hero-date" id="hero-date"></span>
@@ -659,15 +638,27 @@
   <!-- Tab bar -->
   <div class="tabs">
     <div class="tab active" data-p="prayers" id="tab-prayers">
-      <div class="tab-icon">🕌</div>
+      <div class="tab-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 22h18"/><path d="M12 2l1.5 3H13v2h1a1 1 0 1 1 0 2h-1v1h4v12H7V10h4V9h-1a1 1 0 1 1 0-2h1V5h-.5L12 2z"/><path d="M10 22v-4a2 2 0 0 1 4 0v4"/>
+        </svg>
+      </div>
       <div class="tab-label">Prayers</div>
     </div>
     <div class="tab" data-p="qibla" id="tab-qibla">
-      <div class="tab-icon">🧭</div>
+      <div class="tab-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><path d="M12 8l2 4-2 4-2-4 2-4z"/>
+        </svg>
+      </div>
       <div class="tab-label">Qibla</div>
     </div>
     <div class="tab" data-p="quote" id="tab-quote">
-      <div class="tab-icon">📖</div>
+      <div class="tab-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+      </div>
       <div class="tab-label">Reminder</div>
     </div>
   </div>
@@ -683,7 +674,6 @@
     <div class="detail-nav-title" id="d-nav-title"></div>
   </div>
   <div class="detail-hero-section">
-    <div class="detail-big-icon" id="d-icon"></div>
     <div class="detail-en" id="d-name"></div>
     <div class="detail-ar" id="d-ar"></div>
     <div class="detail-time" id="d-time"></div>
@@ -724,15 +714,12 @@ const PRAYERS=[
 ];
 const QUOTES=[{"text": "Indeed, with hardship comes ease.", "source": "Quran 94:6"}, {"text": "Allah does not burden a soul beyond that it can bear.", "source": "Quran 2:286"}, {"text": "And He is with you wherever you are.", "source": "Quran 57:4"}, {"text": "Verily, the remembrance of Allah brings comfort to the heart.", "source": "Quran 13:28"}, {"text": "So remember Me; I will remember you.", "source": "Quran 2:152"}, {"text": "Call upon Me; I will respond to you.", "source": "Quran 40:60"}, {"text": "And seek help through patience and prayer.", "source": "Quran 2:45"}, {"text": "Do not lose hope, nor be sad.", "source": "Quran 3:139"}, {"text": "Speak good or remain silent.", "source": "Bukhari & Muslim"}, {"text": "The best of people are those who benefit others.", "source": "Al-Tabarani"}, {"text": "Smile at your brother \u2014 it is an act of charity.", "source": "Tirmidhi"}, {"text": "None of you truly believes until he loves for his brother what he loves for himself.", "source": "Bukhari & Muslim"}, {"text": "The strong person is one who controls themselves in anger.", "source": "Bukhari"}, {"text": "Make things easy and do not make them difficult.", "source": "Bukhari"}, {"text": "Be in this world as if you are a stranger or a traveller.", "source": "Bukhari"}, {"text": "Take advantage of five before five: youth, health, wealth, free time, and life.", "source": "Hakim"}, {"text": "The best among you are those who have the best manners and character.", "source": "Bukhari"}, {"text": "Allah is beautiful and loves beauty.", "source": "Muslim"}, {"text": "Kindness is a mark of faith, and whoever has no kindness has no faith.", "source": "Muslim"}, {"text": "Every act of kindness is charity.", "source": "Bukhari"}, {"text": "He who does not thank people, does not thank Allah.", "source": "Ahmad"}, {"text": "Verily Allah does not look at your appearance or wealth, but rather He looks at your hearts and actions.", "source": "Muslim"}, {"text": "Whoever walks a path seeking knowledge, Allah will make easy for him a path to Paradise.", "source": "Muslim"}, {"text": "The best charity is that given when you yourself are in need.", "source": "Bukhari"}, {"text": "O Turner of hearts, keep our hearts firm on Your religion.", "source": "Tirmidhi"}, {"text": "Feed the hungry, visit the sick, and free the captive.", "source": "Bukhari"}, {"text": "The world is a prison for the believer and a paradise for the disbeliever.", "source": "Muslim"}, {"text": "Whoever believes in Allah and the Last Day, let him say something good or remain silent.", "source": "Bukhari"}];
 const THEMES={
-  // bg   = deep immersive background (entire UI color-shifts here)
-  // hero = slightly richer gradient layer on top of bg
-  // accent = bright UI color for labels, icons, highlights
-  fajr:   {bg:"#00061c",hero:"#04091a",glow:"rgba(100,150,255,0.22)",accent:"#6ab4ff",accentSoft:"rgba(106,180,255,0.18)"},
-  dhuhr:  {bg:"#160b00",hero:"#1a0e00",glow:"rgba(255,185,50,0.22)", accent:"#ffb830",accentSoft:"rgba(255,184,48,0.18)"},
-  asr:    {bg:"#130900",hero:"#170c00",glow:"rgba(255,145,45,0.22)",  accent:"#ff9a38",accentSoft:"rgba(255,154,56,0.18)"},
-  maghrib:{bg:"#160003",hero:"#1a0205",glow:"rgba(255,75,60,0.22)",   accent:"#ff5a47",accentSoft:"rgba(255,90,71,0.18)"},
-  isha:   {bg:"#08031a",hero:"#0b0520",glow:"rgba(175,115,255,0.22)", accent:"#b07aff",accentSoft:"rgba(176,122,255,0.18)"},
-  default:{bg:"#08080c",hero:"#0a0a12",glow:"rgba(196,164,97,0.12)",  accent:"#c4a461",accentSoft:"rgba(196,164,97,0.18)"},
+  fajr:    {bg:"#030810",hero:"#040a14",glow:"rgba(94,159,255,0.14)", accent:"#6ab4ff",accentSoft:"rgba(106,180,255,0.14)"},
+  dhuhr:   {bg:"#0b0700",hero:"#0f0a00",glow:"rgba(255,184,48,0.14)", accent:"#ffb830",accentSoft:"rgba(255,184,48,0.14)"},
+  asr:     {bg:"#090500",hero:"#0c0700",glow:"rgba(255,154,56,0.14)",  accent:"#ff9a38",accentSoft:"rgba(255,154,56,0.14)"},
+  maghrib: {bg:"#0b0002",hero:"#0f0203",glow:"rgba(255,90,71,0.14)",   accent:"#ff5a47",accentSoft:"rgba(255,90,71,0.14)"},
+  isha:    {bg:"#04020c",hero:"#060310",glow:"rgba(176,122,255,0.14)", accent:"#b07aff",accentSoft:"rgba(176,122,255,0.14)"},
+  default: {bg:"#040408",hero:"#060608",glow:"rgba(196,164,97,0.08)",  accent:"#c4a461",accentSoft:"rgba(196,164,97,0.14)"},
 };
 let LAT=25.3463,LNG=55.4209;
 
@@ -827,12 +814,11 @@ function render(){
     const cls="row"+(isA?" active":isP?" passed":" upcoming")+(sw?" in":"");
     const dl=sw?(i*0.055)+"s":"";
     return`<div class="${cls}" data-p="${p.key}" style="animation-delay:${dl};cursor:pointer" onclick="tapRow(this,'${p.key}')">
-      <div class="row-icon">${p.icon}</div>
+      <div class="row-dot"></div>
       <div class="row-info"><div class="row-name">${p.en}</div><div class="row-ar">${p.ar}</div></div>
       <div class="row-right">
         <div class="row-time">${fmt(T[p.key])}</div>
-        ${isA?'<div class="row-badge">Now</div>':''}
-        <div style="font-size:11px;color:var(--label4);margin-top:3px">Details ›</div>
+        <div class="row-chevron">›</div>
       </div>
     </div>`;
   }).join("");
@@ -885,14 +871,6 @@ function vibeCheck(){
   let aIdx=-1;
   for(let i=0;i<keys.length;i++) if(now>=T[keys[i]]) aIdx=i;
   applyTheme(aIdx>=0?keys[aIdx]:"default");
-  let hb=false;
-  for(let i=0;i<keys.length;i++) if(Math.abs(now-T[keys[i]])<=W){hb=true;break;}
-  if(!hb&&aIdx===keys.length-1){
-    const tm=new Date(today);tm.setDate(tm.getDate()+1);
-    if(Math.abs(now-calcT(tm).fajr)<=W) hb=true;
-  }
-  const ring=document.getElementById("hb");
-  hb?ring.classList.add("on"):ring.classList.remove("on");
 }
 
 // location
@@ -1157,9 +1135,6 @@ function openDetail(prayerKey){
 
   // populate
   document.getElementById("d-nav-title").textContent = prayer.en;
-  const iconEl = document.getElementById("d-icon");
-  iconEl.textContent = prayer.icon;
-  iconEl.style.background = info.colorSoft;
   document.getElementById("d-name").textContent = prayer.en;
   document.getElementById("d-ar").textContent = prayer.ar;
   document.getElementById("d-time").textContent = fmt(T[prayerKey]);
@@ -1194,7 +1169,7 @@ function openDetail(prayerKey){
   document.getElementById("d-hadith-src").textContent = info.hadithSrc;
 
   // set initial states for animation targets
-  anime.set(["#d-icon","#d-name","#d-ar","#d-time","#d-desc"],{opacity:0,translateY:20});
+  anime.set(["#d-name","#d-ar","#d-time","#d-desc"],{opacity:0,translateY:20});
   anime.set(["#d-card-rakats","#d-card-window","#d-card-hadith"],{opacity:0,translateY:14});
   anime.set("#d-rakats .rakat-chip",{opacity:0,translateX:16});
 
@@ -1208,7 +1183,7 @@ function openDetail(prayerKey){
   anime({ targets: detail, translateY:["100%","0%"], duration:500, easing:"spring(1, 80, 11, 0)" });
 
   // 2. hero elements stagger in
-  anime({ targets:["#d-icon","#d-name","#d-ar","#d-time","#d-desc"],
+  anime({ targets:["#d-name","#d-ar","#d-time","#d-desc"],
     opacity:[0,1], translateY:[20,0],
     delay:anime.stagger(60,{start:160}), duration:400, easing:"easeOutCubic" });
 
