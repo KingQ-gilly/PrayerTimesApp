@@ -38,12 +38,13 @@
 
     /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { height: 100%; background: var(--bg); }
+    html { height: 100%; background: var(--bg); overflow-x: hidden; }
     body {
       min-height: 100dvh; background: var(--bg); color: var(--on-surface);
       font-family: var(--sf);
       -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
-      overflow: hidden;
+      overflow: hidden; overscroll-behavior: none;
+      position: fixed; inset: 0; width: 100%;
     }
 
     /* ── Glass card mixin (dark) ── */
@@ -66,9 +67,8 @@
     }
     /* Ambient atmospheric glow at the horizon */
     .celestial-atmos {
-      position: absolute; left: 50%; bottom: -10%;
-      width: 150%; height: 120%;
-      transform: translateX(-50%);
+      position: absolute; left: 0; right: 0; bottom: -10%;
+      width: 100%; height: 120%;
       border-radius: 50%;
       opacity: 0.55;
       transition: background 2.4s ease, opacity 2.4s ease;
@@ -153,7 +153,8 @@
     .app { position: fixed; inset: 0; display: flex; flex-direction: column; overflow: hidden; z-index: 1; }
     .pages { flex: 1; overflow: hidden; position: relative; min-height: 0; }
     .page {
-      position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+      overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
       opacity: 0; pointer-events: none;
       transform: translateY(10px) scale(0.992);
       transition: opacity 0.34s var(--ease-out), transform 0.44s var(--ease-out);
