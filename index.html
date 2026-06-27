@@ -61,26 +61,31 @@
     ══════════════════════════════════ */
     .celestial-stage {
       position: absolute; top: 0; left: 0; right: 0;
-      height: 46%; z-index: 0; pointer-events: none;
+      height: 42vh; z-index: 0; pointer-events: none;
       overflow: visible;
     }
     /* Ambient atmospheric glow at the horizon */
     .celestial-atmos {
-      position: absolute; left: 50%; bottom: -6%;
-      width: 150%; height: 130%;
+      position: absolute; left: 50%; bottom: -10%;
+      width: 150%; height: 120%;
       transform: translateX(-50%);
       border-radius: 50%;
-      opacity: 0.5;
+      opacity: 0.55;
       transition: background 2.4s ease, opacity 2.4s ease;
-      filter: blur(8px);
+      filter: blur(10px);
     }
     .celestial-atmos.is-day {
-      background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(255,176,60,0.22) 0%, rgba(255,140,20,0.08) 38%, transparent 66%);
+      background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(255,176,60,0.24) 0%, rgba(255,140,20,0.09) 38%, transparent 66%);
     }
     .celestial-atmos.is-night {
       background: radial-gradient(ellipse 60% 70% at 50% 100%, rgba(150,180,240,0.16) 0%, rgba(90,120,210,0.06) 40%, transparent 66%);
     }
-    .celestial-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    /* SVG pushed below the status bar / notch so the orb never clips off-screen */
+    .celestial-svg {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      top: calc(env(safe-area-inset-top) + 6px);
+      width: 100%; overflow: visible;
+    }
     #sun-arc {
       fill: none; stroke: rgba(255,255,255,0.14);
       stroke-width: 1.4; stroke-dasharray: 2 9; stroke-linecap: round;
@@ -99,31 +104,42 @@
       will-change: left, top;
     }
     .orb-core {
-      position: absolute; left: -34px; top: -34px;
-      width: 68px; height: 68px; border-radius: 50%;
+      position: absolute; left: -29px; top: -29px;
+      width: 58px; height: 58px; border-radius: 50%;
       will-change: transform;
     }
     .orb-core::after { /* soft outer aura */
-      content: ""; position: absolute; inset: -26px; border-radius: 50%;
-      background: inherit; opacity: 0.18; filter: blur(22px); z-index: -1;
+      content: ""; position: absolute; inset: -22px; border-radius: 50%;
+      background: inherit; opacity: 0.16; filter: blur(20px); z-index: -1;
     }
+    /* ── Sun: radiant molten disc ── */
     .orb-core.sun {
-      background: radial-gradient(circle at 36% 30%, #FFFEF0 0%, #FFDE55 38%, #FFA21E 70%, #FF7A00 100%);
+      background:
+        radial-gradient(circle at 50% 48%, #FFFEF2 0%, #FFE984 26%, #FFC23A 56%, #FF9415 82%, #FF6E00 100%);
       box-shadow:
-        0 0 38px rgba(255,170,40,0.62),
-        0 0 90px rgba(255,140,20,0.34),
-        0 0 160px rgba(255,110,0,0.16);
+        0 0 30px rgba(255,184,46,0.72),
+        0 0 66px rgba(255,150,20,0.46),
+        0 0 130px rgba(255,110,0,0.22),
+        inset -5px -6px 20px rgba(190,72,0,0.34),
+        inset 5px 6px 16px rgba(255,255,255,0.34);
     }
+    /* ── Moon: shaded sphere + craters + soft crescent terminator ── */
     .orb-core.moon {
-      background: radial-gradient(circle at 60% 32%, #F4F8FF 0%, #D2DEF0 46%, #9BABC8 78%, #788AAC 100%);
+      background:
+        radial-gradient(circle at 64% 24%, rgba(120,135,162,0.55) 0 3.5%, transparent 5%),
+        radial-gradient(circle at 40% 58%, rgba(120,135,162,0.5) 0 5.5%, transparent 7%),
+        radial-gradient(circle at 70% 64%, rgba(120,135,162,0.45) 0 3%, transparent 4.5%),
+        radial-gradient(circle at 30% 40%, rgba(120,135,162,0.4) 0 2.5%, transparent 4%),
+        radial-gradient(circle at 35% 30%, #ffffff 0%, #eef2f9 24%, #d2dbe8 54%, #aeb9cf 80%, #8c99b4 100%);
       box-shadow:
-        0 0 34px rgba(180,205,250,0.5),
-        0 0 80px rgba(120,155,225,0.28),
-        0 0 150px rgba(80,110,200,0.14);
+        0 0 26px rgba(196,214,250,0.42),
+        0 0 64px rgba(120,155,225,0.24),
+        inset -9px -11px 24px rgba(38,52,86,0.55),
+        inset 7px 8px 16px rgba(255,255,255,0.32);
     }
-    .orb-core.moon::before { /* crescent shadow cut */
+    .orb-core.moon::before { /* soft curved terminator → crescent (lit on the left) */
       content: ""; position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(circle at 78% 28%, var(--bg) 33%, transparent 39%);
+      background: radial-gradient(circle at 120% 30%, rgba(8,10,16,0.92) 28%, rgba(8,10,16,0.55) 46%, rgba(8,10,16,0) 64%);
     }
 
     /* ── Background tint layer ── */
@@ -178,7 +194,7 @@
     /* Grand dome panel — the "horizon" the orb sets behind */
     .dome-panel {
       flex: 1; display: flex; flex-direction: column;
-      margin-top: 30%;
+      margin-top: 26vh;
       border-radius: 42px 42px 0 0;
       background:
         linear-gradient(180deg, rgba(34,35,42,0.86) 0%, rgba(20,21,25,0.88) 22%),
@@ -225,7 +241,7 @@
     .notif-btn.on { color: var(--gold); border-color: rgba(212,175,55,0.35); }
 
     /* Circular arc countdown */
-    .arc-wrap { position:relative; width:204px; height:204px; margin:0 auto 18px; animation:fadeIn 0.5s 0.1s ease both; }
+    .arc-wrap { position:relative; width:190px; height:190px; margin:0 auto 16px; animation:fadeIn 0.5s 0.1s ease both; }
     .arc-svg { position:absolute; inset:0; width:100%; height:100%; }
     .arc-inner {
       position:absolute; inset:19px; border-radius:50%;
@@ -235,7 +251,7 @@
     }
     .arc-label { font-family:var(--sf); font-size:9px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--on-surface-3); }
     .arc-name  { font-family:var(--serif); font-size:20px; font-style:italic; color:var(--gold); line-height:1.05; }
-    .arc-cd    { font-family:var(--sf); font-size:2.55rem; font-weight:600; color:#fff; letter-spacing:-0.01em; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap; }
+    .arc-cd    { font-family:var(--sf); font-size:2.35rem; font-weight:600; color:#fff; letter-spacing:-0.01em; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap; }
     .arc-sub   { font-family:var(--sf); font-size:9px; font-weight:600; color:var(--on-surface-3); letter-spacing:0.16em; text-transform:uppercase; }
 
     /* Prayer list */
@@ -243,7 +259,7 @@
 
     .row {
       display:flex; align-items:center;
-      padding:0 18px; min-height:56px;
+      padding:0 18px; min-height:54px;
       border-radius:18px; cursor:pointer;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.07);
@@ -274,6 +290,22 @@
     .row.active .row-time { color:var(--gold); font-weight:700; }
     .row-chevron { font-size:13px; color:rgba(255,255,255,0.14); margin-top:2px; }
     .row.active .row-chevron { color:var(--gold); opacity:0.55; }
+    /* Soon / Now status badge under the time */
+    .row-status { font-family:var(--sf); font-size:10px; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; margin-top:3px; }
+    .row-status.soon { color:var(--gold); opacity:0.9; }
+    .row-status.now {
+      color:#56DD93;
+      display:inline-flex; align-items:center; gap:5px;
+    }
+    .row-status.now::before {
+      content:""; width:6px; height:6px; border-radius:50%; background:#56DD93;
+      box-shadow:0 0 8px #56DD93; animation: nowPulse 1.6s ease-in-out infinite;
+    }
+    @keyframes nowPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.45;transform:scale(0.7);} }
+    .row.active.is-now { border-color:rgba(86,221,147,0.4); box-shadow:0 0 28px rgba(86,221,147,0.12), inset 0 0 16px rgba(86,221,147,0.05); }
+    .row.active.is-now::before { background:#56DD93; }
+    .row.active.is-now .row-name, .row.active.is-now .row-time { color:#7FE7AE; }
+    .row.active.is-now .row-dot { background:#56DD93; }
 
     /* ══════════════════════════════════
        QIBLA PAGE
@@ -725,6 +757,53 @@
       0%,100% { box-shadow: 0 0 0 0 rgba(255,180,40,0); }
       50%      { box-shadow: 0 0 0 14px rgba(255,180,40,0); }
     }
+
+    /* ══════════════════════════════════
+       RESPONSIVE — fit every phone height
+    ══════════════════════════════════ */
+    /* Shorter phones (e.g. iPhone SE, many Androids) — compact the hero so the
+       full prayer list stays visible without scrolling. */
+    /* Most phones (711–850px tall) — compact hero so all 5 prayers fit */
+    @media (max-height: 850px) {
+      .celestial-stage { height: 26vh; }
+      .dome-panel { margin-top: 19vh; }
+      .prayers-hero { padding-top: 14px; }
+      .hero-hijri { margin-bottom: 12px; }
+      .arc-wrap { width: 158px; height: 158px; margin-bottom: 12px; }
+      .arc-inner { inset: 15px; }
+      .arc-cd { font-size: 2rem; }
+      .arc-name { font-size: 17px; }
+      .list { gap: 5px; }
+      .row { min-height: 51px; }
+    }
+    /* Short phones (≤710px — iPhone SE, compact Androids) */
+    @media (max-height: 710px) {
+      .celestial-stage { height: 24vh; }
+      .dome-panel { margin-top: 15vh; }
+      .prayers-hero { padding-top: 10px; }
+      .hero-hijri { margin-bottom: 8px; }
+      .arc-wrap { width: 132px; height: 132px; margin-bottom: 8px; }
+      .arc-inner { inset: 13px; }
+      .arc-cd { font-size: 1.8rem; }
+      .arc-label { font-size: 8px; }
+      .arc-name { font-size: 15px; }
+      .list { gap: 4px; }
+      .row { min-height: 46px; }
+      .row-ar { display: none; }
+    }
+    /* Very narrow phones — keep the compass and ring within the width */
+    @media (max-width: 360px) {
+      .compass { width: 240px; height: 240px; }
+    }
+    /* Large phones / tablets — cap content width so it stays phone-like */
+    @media (min-width: 540px) {
+      .qibla-wrap, .duas-wrap, .settings-wrap, .detail-content {
+        max-width: 520px; margin-left: auto; margin-right: auto;
+      }
+      /* dua card content stays centered but the card itself stays full-width
+         so the swipe-track math (steps by viewport width) keeps working */
+      .dr-card > * { max-width: 520px; margin-left: auto; margin-right: auto; }
+    }
   </style>
 </head>
 <body>
@@ -740,8 +819,8 @@
         <!-- Celestial Horizon Tracker -->
         <div class="celestial-stage" id="celestial-stage">
           <div class="celestial-atmos is-night" id="celestial-atmos"></div>
-          <svg class="celestial-svg" id="celestial-svg" viewBox="0 0 400 130" preserveAspectRatio="xMidYMin meet">
-            <path id="sun-arc" d="M 28 112 A 210 210 0 0 1 372 112"/>
+          <svg class="celestial-svg" id="celestial-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMin meet">
+            <path id="sun-arc" d="M 30 180 A 220 220 0 0 1 370 180"/>
             <g id="arc-ticks"></g>
           </svg>
           <div class="orb-anchor" id="orb-anchor">
@@ -775,7 +854,6 @@
               <div class="arc-label" id="arc-label">NEXT PRAYER</div>
               <div class="arc-name"  id="arc-name">—</div>
               <div class="arc-cd"   id="arc-cd">--:--</div>
-              <div class="arc-sub"  id="arc-sub"></div>
             </div>
           </div>
         </div>
@@ -949,7 +1027,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             Calculation
           </div>
-          <div class="settings-row"><span class="settings-row-title">Umm Al-Qura</span><span class="settings-badge">Active</span></div>
+          <div class="settings-row"><span class="settings-row-title">Dubai (UAE)</span><span class="settings-badge">Active</span></div>
           <div class="settings-row"><span class="settings-row-title">Coordinates</span><span class="settings-row-sub">25.35°N · 55.42°E</span></div>
         </div>
         <button class="settings-notif-btn glass-card" id="settings-notif-btn">
@@ -965,8 +1043,15 @@
   <div class="tabs">
     <div class="tab active" data-p="prayers" id="tab-prayers">
       <div class="tab-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 22h18"/><path d="M12 2l1.5 3H13v2h1a1 1 0 1 1 0 2h-1v1h4v12H7V10h4V9h-1a1 1 0 1 1 0-2h1V5h-.5L12 2z"/><path d="M10 22v-4a2 2 0 0 1 4 0v4"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21.5h18"/>
+          <path d="M5 21.5V10.5"/><path d="M3.6 10.5a1.4 1.4 0 0 1 2.8 0"/><path d="M5 8.9V8"/>
+          <path d="M19 21.5V10.5"/><path d="M17.6 10.5a1.4 1.4 0 0 1 2.8 0"/><path d="M19 8.9V8"/>
+          <path d="M7.5 21.5V12.2"/><path d="M16.5 21.5V12.2"/>
+          <path d="M7.5 12.2c0-3.2 2-4.9 4.5-4.9s4.5 1.7 4.5 4.9"/>
+          <path d="M12 7.3V6"/>
+          <path d="M12.5 3.1a1.55 1.55 0 1 0 0 3.05 1.25 1.25 0 1 1 0-3.05z"/>
+          <path d="M10.8 21.5v-4.1a1.2 1.2 0 0 1 2.4 0v4.1"/>
         </svg>
       </div>
       <div class="tab-label">Prayers</div>
@@ -1082,10 +1167,26 @@ let LAT=25.3463, LNG=55.4209;
 
 function calcT(d){
   const c=new adhan.Coordinates(LAT,LNG);
-  const p=adhan.CalculationMethod.UmmAlQura();
+  const p=adhan.CalculationMethod.Dubai();   // UAE official method
   p.madhab=adhan.Madhab.Shafi;
   const t=new adhan.PrayerTimes(c,d,p);
   return{fajr:t.fajr,dhuhr:t.dhuhr,asr:t.asr,maghrib:t.maghrib,isha:t.isha};
+}
+
+// ── Prayer highlight state machine ──
+// Highlights the NEXT prayer 30 min before its time ("Soon"), flips to "Now"
+// at prayer time for 20 min, then stays highlighted (no label) until the next
+// prayer's 30-min window begins. Overnight (before Fajr) keeps Isha lit.
+const SOON_MS=30*60000, NOW_MS=20*60000;
+function prayerState(T,now){
+  const keys=PRAYERS.map(p=>p.key);
+  let a=-1; for(let i=0;i<keys.length;i++) if(now>=T[keys[i]]) a=i;
+  let n=-1; for(let i=0;i<keys.length;i++) if(T[keys[i]]>now){n=i;break;}
+  let hi, label='';
+  if(n>=0 && (T[keys[n]]-now)<=SOON_MS){ hi=n; label='soon'; }
+  else if(a>=0){ hi=a; if((now-T[keys[a]])<=NOW_MS) label='now'; }
+  else { hi=keys.length-1; }   // deep night before Fajr → Isha stays highlighted
+  return {a,n,hi,label,keys};
 }
 function fmt(d){return d.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true});}
 function hijri(d){try{return d.toLocaleDateString("en-US-u-ca-islamic",{day:"numeric",month:"long",year:"numeric"});}catch(e){return "";}}
@@ -1113,45 +1214,39 @@ document.querySelectorAll(".tab").forEach(t=>{
   });
 });
 
-let lastAIdx=-1;
+let lastHi=-99;
 function render(){
   const now=new Date();
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const T=calcT(today);
-  const keys=PRAYERS.map(p=>p.key);
 
   document.getElementById("hero-date").textContent=now.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
   document.getElementById("hero-hijri").textContent=hijri(now);
 
-  let aIdx=-1;
-  for(let i=0;i<keys.length;i++) if(now>=T[keys[i]]) aIdx=i;
-  let nIdx=-1;
-  for(let i=0;i<keys.length;i++) if(T[keys[i]]>now){nIdx=i;break;}
+  const st=prayerState(T,now);
+  const aIdx=st.a, nIdx=st.n, hi=st.hi, label=st.label;
 
-  const sw=aIdx!==lastAIdx;
-  lastAIdx=aIdx;
+  const sw=hi!==lastHi;
+  lastHi=hi;
 
-  // arc label
+  // arc label — always points to the upcoming prayer
   document.getElementById("arc-label").textContent= nIdx>=0 ? "NEXT PRAYER" : "TOMORROW";
-  if(nIdx>=0){
-    document.getElementById("arc-name").textContent=PRAYERS[nIdx].en;
-    document.getElementById("arc-sub").textContent= aIdx>=0 ? "AFTER "+PRAYERS[aIdx].en.toUpperCase() : "";
-  } else {
-    document.getElementById("arc-name").textContent="Fajr";
-    document.getElementById("arc-sub").textContent="TOMORROW";
-  }
+  document.getElementById("arc-name").textContent= nIdx>=0 ? PRAYERS[nIdx].en : "Fajr";
 
   document.getElementById("list").innerHTML=PRAYERS.map((p,i)=>{
-    const isA=aIdx===i;
-    const isP=T[p.key]<now&&!isA;
-    const cls="row"+(isA?" active":isP?" passed":" upcoming")+(sw?" in":"");
-    const dl=sw?(i*0.055)+"s":"";
+    const isHi=i===hi;
+    const isP=T[p.key]<now&&!isHi;
+    const cls="row"+(isHi?" active":isP?" passed":"")+(isHi&&label==='now'?" is-now":"")+(sw?" in":"");
+    const dl=sw?(i*0.05)+"s":"";
+    const status = isHi && label
+      ? `<div class="row-status ${label}">${label==='now'?'Now':'Soon'}</div>`
+      : `<div class="row-chevron">›</div>`;
     return`<div class="${cls}" data-p="${p.key}" style="animation-delay:${dl};cursor:pointer" onclick="tapRow(this,'${p.key}')">
       <div class="row-dot"></div>
       <div class="row-info"><div class="row-name">${p.en}</div><div class="row-ar">${p.ar}</div></div>
       <div class="row-right">
         <div class="row-time">${fmt(T[p.key])}</div>
-        <div class="row-chevron">›</div>
+        ${status}
       </div>
     </div>`;
   }).join("");

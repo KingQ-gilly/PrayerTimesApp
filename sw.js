@@ -1,4 +1,4 @@
-const CACHE = 'prayer-times-v16';
+const CACHE = 'prayer-times-v18';
 const PRECACHE = [
   './',
   './index.html',
